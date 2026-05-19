@@ -386,6 +386,17 @@
     .section-grid, .section-grid-3 { grid-template-columns: 1fr; }
   }
 </style>
+<script>
+// 页面保护：允许复制文字，禁止右键/另存为/查看源码/F12等
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'S' || e.key === 'U')) ||
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c'))) {
+    e.preventDefault();
+  }
+});
+</script>
 </head>
 <body>
 
