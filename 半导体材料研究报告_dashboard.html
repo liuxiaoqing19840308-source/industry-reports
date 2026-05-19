@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>半导体材料行业深度研究报告 — 机构路演版</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+    background: #f0f3f8;
+    color: #2c3e50;
+    font-size: 12px;
+  }
+
+  /* ===== EDIT MODE TOOLBAR ===== */
+  .edit-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    background: #1a2b45;
+    padding: 7px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .edit-toolbar .toolbar-label {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    margin-right: 4px;
+  }
+  .btn-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .btn-tool:hover { background: rgba(255,255,255,0.18); }
+  .btn-tool.active { background: #1e6db5; border-color: #2d8fd4; }
+  .btn-copy-all {
+    background: rgba(39,174,96,0.2);
+    border-color: rgba(39,174,96,0.5);
+  }
+  .btn-copy-all:hover { background: rgba(39,174,96,0.35); }
+  .btn-reset {
+    background: rgba(192,57,43,0.2);
+    border-color: rgba(192,57,43,0.5);
+  }
+  .btn-reset:hover { background: rgba(192,57,43,0.35); }
+  .toolbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+  .toast {
+    margin-left: auto;
+    background: #27ae60;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ===== EDITABLE ELEMENTS ===== */
+  [contenteditable="true"] {
+    outline: none;
+    cursor: text;
+  }
+  body.edit-mode [contenteditable="true"] {
+    border: 1px dashed #aac4e8;
+    border-radius: 3px;
+    padding: 1px 3px;
+    background: rgba(30,109,181,0.03);
+    min-width: 20px;
+    display: inline-block;
+  }
+  body.edit-mode [contenteditable="true"]:focus {
+    border-color: #1e6db5;
+    background: rgba(30,109,181,0.07);
+    box-shadow: 0 0 0 2px rgba(30,109,181,0.15);
+  }
+  body.edit-mode [contenteditable="true"]:hover:not(:focus) {
+    background: rgba(30,109,181,0.05);
+    border-color: #90b8dc;
+  }
+  body.edit-mode .editable-block {
+    border: 1px dashed #aac4e8 !important;
+    border-radius: 4px !important;
+    background: rgba(30,109,181,0.02) !important;
+  }
+  body.edit-mode .editable-block:focus {
+    border-color: #1e6db5 !important;
+    background: rgba(30,109,181,0.06) !important;
+    box-shadow: 0 0 0 2px rgba(30,109,181,0.12) !important;
+    outline: none !important;
+  }
+  /* copy button per-card */
+  .card-copy-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    border: 1px solid #d0daea;
+    background: #f0f4fa;
+    color: #1e6db5;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .card-copy-btn:hover { background: #dce8f8; }
+
+  /* ===== HEADER ===== */
+  .page-header {
+    background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 50%, #3d8bc4 100%);
+    color: #fff;
+    text-align: center;
+    padding: 18px 40px 14px;
+    position: relative;
+  }
+  .page-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .page-header .meta {
+    margin-top: 6px;
+    font-size: 11px;
+    opacity: 0.8;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+  }
+  .page-header .meta span { display: flex; align-items: center; gap: 4px; }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 16px 20px 24px;
+  }
+
+  /* ===== SECTION ===== */
+  .section-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .section-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .section-full {
+    margin-bottom: 14px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 8px 14px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #eef1f5;
+  }
+  .card-header .badge {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .bg-blue   { background: #1e6db5; }
+  .bg-teal   { background: #0e9e8e; }
+  .bg-purple { background: #6c5ce7; }
+  .bg-orange { background: #e07c30; }
+  .bg-green  { background: #27ae60; }
+  .card-body { padding: 10px 14px 12px; }
+
+  /* ===== HIGHLIGHT BOX ===== */
+  .highlight-box {
+    background: #f5f8fd;
+    border-left: 3px solid #1e6db5;
+    padding: 6px 10px;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 8px;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .highlight-box strong { color: #1e6db5; }
+  .highlight-box.green { border-left-color: #27ae60; background: #f0fbf5; }
+  .highlight-box.green strong { color: #27ae60; }
+  .highlight-box.orange { border-left-color: #e07c30; background: #fdf6ee; }
+  .highlight-box.orange strong { color: #e07c30; }
+  .highlight-box.red { border-left-color: #c0392b; background: #fdf0ee; }
+  .highlight-box.red strong { color: #c0392b; }
+
+  /* ===== TABLE ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  th {
+    background: #f0f4fa;
+    color: #1e6db5;
+    font-weight: 700;
+    padding: 5px 6px;
+    text-align: left;
+    border-bottom: 2px solid #d0daea;
+  }
+  td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #eef1f5;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+  tr:hover td { background: #f8fafd; }
+  tr:last-child td { border-bottom: none; }
+  .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .tag-red    { background: #fde8e8; color: #c0392b; }
+  .tag-green  { background: #e8f8ef; color: #1e8449; }
+  .tag-blue   { background: #e8f0fd; color: #1e6db5; }
+  .tag-orange { background: #fef2e4; color: #ca6f1e; }
+  .tag-gray   { background: #f0f0f0; color: #777; }
+  .tag-purple { background: #f0ecfd; color: #6c5ce7; }
+
+  /* ===== CHART CONTAINERS ===== */
+  .chart-wrap { position: relative; }
+  .chart-label { font-size: 11px; color: #888; margin-bottom: 4px; font-weight: 600; }
+
+  /* ===== PROGRESS BARS ===== */
+  .progress-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+  }
+  .progress-label { width: 80px; font-size: 10px; color: #555; flex-shrink: 0; }
+  .progress-bar-bg {
+    flex: 1; height: 10px; background: #eef1f5; border-radius: 5px; overflow: hidden;
+  }
+  .progress-bar-fill { height: 100%; border-radius: 5px; transition: width 0.4s; }
+  .progress-val { width: 46px; font-size: 10px; font-weight: 700; text-align: right; flex-shrink: 0; }
+
+  /* ===== STOCK PRIORITY ===== */
+  .stock-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .stock-card {
+    border: 1px solid #e8ecf3;
+    border-radius: 6px;
+    padding: 7px 9px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stock-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent, #1e6db5);
+  }
+  .stock-name { font-weight: 700; font-size: 12px; color: #1a2b45; }
+  .stock-code { font-size: 10px; color: #999; margin-left: 4px; }
+  .stock-price { font-size: 13px; font-weight: 800; color: #c0392b; }
+  .stock-chg { font-size: 11px; font-weight: 700; }
+  .chg-up { color: #c0392b; }
+  .chg-down { color: #1a9e5a; }
+  .stock-pe { font-size: 10px; color: #888; }
+  .star-row { margin-top: 3px; color: #f39c12; font-size: 11px; }
+  .stock-desc { font-size: 10px; color: #666; margin-top: 2px; line-height: 1.4; }
+
+  /* ===== DIVIDER ===== */
+  .divider { border: none; border-top: 1px solid #dce3ed; margin: 8px 0; }
+
+  /* ===== SECTION NUM BADGE ===== */
+  .sec-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 800; color: #1a2b45;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #1e6db5;
+  }
+  .sec-num {
+    background: #1e6db5; color: #fff;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+
+  /* ===== TOOLTIP / SIGNAL ===== */
+  .signal-item {
+    display: flex; align-items: flex-start; gap: 6px;
+    padding: 4px 0; border-bottom: 1px solid #f0f0f0;
+    font-size: 11px; line-height: 1.5;
+  }
+  .signal-item:last-child { border-bottom: none; }
+  .signal-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    margin-top: 4px; flex-shrink: 0;
+  }
+  .dot-red { background: #e74c3c; }
+  .dot-yellow { background: #f39c12; }
+  .dot-green { background: #27ae60; }
+
+  /* ===== LEGEND ===== */
+  .legend-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .legend-item { display: flex; align-items: center; gap: 3px; font-size: 10px; color: #666; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ===== FOOTER ===== */
+  .page-footer {
+    background: #1a2b45;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 10px;
+    line-height: 1.8;
+  }
+
+  /* ===== MINI-CHART ===== */
+  .mini-chart-container { height: 140px; position: relative; }
+  .chart-container-sm { height: 170px; position: relative; }
+  .chart-container-md { height: 200px; position: relative; }
+  .chart-container-lg { height: 220px; position: relative; }
+  .donut-container { height: 180px; position: relative; }
+
+  /* ===== WARNING ===== */
+  .warn-box {
+    background: #fff8e1; border: 1px solid #ffd54f;
+    border-radius: 4px; padding: 6px 10px;
+    font-size: 11px; color: #7d6608; margin-top: 8px; line-height: 1.5;
+  }
+  .warn-box strong { color: #b7770d; }
+
+  /* trend arrow */
+  .arr-up { color: #c0392b; font-weight: 700; }
+  .arr-dn { color: #1a9e5a; font-weight: 700; }
+  .arr-eq { color: #888; }
+
+  /* consensus row */
+  .con-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  .con-pill {
+    flex: 1; border-radius: 20px; padding: 5px 8px;
+    font-size: 10px; text-align: center; font-weight: 600; line-height: 1.4;
+  }
+  .con-bull { background: #fde8e8; color: #c0392b; border: 1px solid #f5b7b1; }
+  .con-bear { background: #e8f0fd; color: #1e6db5; border: 1px solid #a9cce3; }
+
+  /* scroll */
+  .scroll-table { overflow-x: auto; }
+
+  @media (max-width: 900px) {
+    .section-grid, .section-grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== EDIT MODE TOOLBAR ===== -->
+<div class="edit-toolbar">
+  <span class="toolbar-label">📝 编辑工具栏</span>
+  <button class="btn-tool" id="btnToggleEdit" onclick="toggleEditMode()">✏️ 开启编辑模式</button>
+  <div class="toolbar-sep"></div>
+  <button class="btn-tool btn-copy-all" onclick="copyAllText()">📋 复制全部文本</button>
+  <button class="btn-tool btn-copy-all" onclick="copyAsMarkdown()">📄 复制为Markdown</button>
+  <div class="toolbar-sep"></div>
+  <button class="btn-tool btn-reset" onclick="resetAll()">↺ 重置所有编辑</button>
+  <div class="toolbar-sep"></div>
+  <span style="color:rgba(255,255,255,0.5);font-size:10px">提示：开启编辑后可直接点击任意文字区域修改</span>
+  <span class="toast" id="toast">已复制 ✓</span>
+</div>
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <h1 contenteditable="false" id="reportTitle">半导体材料行业深度研究报告</h1>
+  <div class="meta">
+    <span contenteditable="false" id="metaDate">📅 2026年5月18日</span>
+    <span contenteditable="false" id="metaType">🎯 机构客户路演参考版</span>
+    <span contenteditable="false" id="metaSource">📊 数据来源：腾讯自选股 · 各券商研报</span>
+    <span contenteditable="false" id="metaDisclaim">⚠️ 仅供内部参考，不构成投资建议</span>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- =============================================== -->
+<!-- ROW 1: 市场分歧共识 + 板块涨幅 + 关键分歧     -->
+<!-- =============================================== -->
+<div class="section-grid">
+
+  <!-- 市场分歧与共识 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge bg-blue">1</div>
+      <span contenteditable="false">市场分歧与共识</span>
+      <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+    </div>
+    <div class="card-body" id="card-consensus">
+      <div class="sec-title"><div class="sec-num">✓</div>三大市场共识</div>
+
+      <div class="highlight-box green">
+        <strong contenteditable="false">共识① 国产替代窗口加速</strong><br>
+        <span contenteditable="false">2026年1月商务部对日本DCS启动反倾销立案，日本管制升级倒逼。市场高度一致认为"供应链安全→国产替代紧迫性"是核心驱动。</span>
+      </div>
+      <div class="highlight-box">
+        <strong contenteditable="false">共识② 存储景气拉动材料需求</strong><br>
+        <span contenteditable="false">2026年DRAM/NAND涨价超预期，HBM需求爆发；前驱体、CMP抛光液、靶材、特气直接受益。</span>
+      </div>
+      <div class="highlight-box orange">
+        <strong contenteditable="false">共识③ 估值修复充分，需业绩验证</strong><br>
+        <span contenteditable="false">申万半导体20日涨幅+27%全行业第一，接下来季报验证比政策刺激更重要。</span>
+      </div>
+
+      <div class="sec-title" style="margin-top:10px"><div class="sec-num">!</div>核心分歧矩阵</div>
+      <div class="scroll-table">
+        <table>
+          <thead>
+            <tr><th>分歧维度</th><th>多方观点</th><th>空方观点</th><th>关注度</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong contenteditable="false">硅片拐点时间</strong></td>
+              <td contenteditable="false">Q2-Q3销量大增，盈利拐点来临</td>
+              <td contenteditable="false">ASP仍承压，2026全年仍亏损</td>
+              <td><span class="tag tag-red" contenteditable="false">高</span></td>
+            </tr>
+            <tr>
+              <td><strong contenteditable="false">中船特气估值</strong></td>
+              <td contenteditable="false">稀缺资源，140x PE溢价合理</td>
+              <td contenteditable="false">成长性已price in，解禁风险大</td>
+              <td><span class="tag tag-red" contenteditable="false">高</span></td>
+            </tr>
+            <tr>
+              <td><strong contenteditable="false">雅克科技天花板</strong></td>
+              <td contenteditable="false">平台型材料公司，给55x+ PE</td>
+              <td contenteditable="false">光刻胶收入体量尚小</td>
+              <td><span class="tag tag-orange" contenteditable="false">中</span></td>
+            </tr>
+            <tr>
+              <td><strong contenteditable="false">国产替代线性外推</strong></td>
+              <td contenteditable="false">日本管制持续，替代加速</td>
+              <td contenteditable="false">中美贸易谈判缓和，逻辑边际弱化</td>
+              <td><span class="tag tag-red" contenteditable="false">高</span></td>
+            </tr>
+            <tr>
+              <td><strong contenteditable="false">安集科技天花板</strong></td>
+              <td contenteditable="false">电镀液打开第二曲线</td>
+              <td contenteditable="false">CMP市占率高，竞争者涌入</td>
+              <td><span class="tag tag-blue" contenteditable="false">低</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warn-box">
+        <strong contenteditable="false">⚠️ 最大非共识风险</strong>：<span contenteditable="false">中美技术博弈节奏变化 — 若管制放松导致国产替代叙事减弱，短期情绪冲击较大，需紧密跟踪。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧：板块行情 + 个股涨幅 -->
+  <div style="display:flex; flex-direction:column; gap:14px;">
+
+    <!-- 申万行业涨幅 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="badge bg-teal">2</div>
+        <span contenteditable="false">板块行情——申万行业区间涨幅（截至2026-05-18）</span>
+        <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+      </div>
+      <div class="card-body">
+        <div class="section-grid" style="gap:10px;margin-bottom:0">
+          <div>
+            <div class="chart-label">申万行业20日涨幅 TOP 10</div>
+            <div class="mini-chart-container"><canvas id="sectorChart"></canvas></div>
+          </div>
+          <div>
+            <div class="chart-label">核心标的年内涨幅 (%)</div>
+            <div class="mini-chart-container"><canvas id="stockYtdChart"></canvas></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <div class="progress-row"><div class="progress-label" contenteditable="false">电子化学品Ⅱ(250d)</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:100%;background:#c0392b"></div></div><div class="progress-val arr-up" contenteditable="false">+122.8%</div></div>
+          <div class="progress-row"><div class="progress-label" contenteditable="false">申万半导体(60d)</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:76%;background:#e74c3c"></div></div><div class="progress-val arr-up" contenteditable="false">+32.5%</div></div>
+          <div class="progress-row"><div class="progress-label" contenteditable="false">申万半导体(20d)</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:65%;background:#e74c3c"></div></div><div class="progress-val arr-up" contenteditable="false">+27.0%</div></div>
+          <div class="progress-row"><div class="progress-label" contenteditable="false">电子化学品Ⅱ(20d)</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:61%;background:#e67e22"></div></div><div class="progress-val arr-up" contenteditable="false">+25.5%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 股价归因 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="badge bg-purple">2.2</div>
+        <span contenteditable="false">股价涨跌四维归因拆解</span>
+        <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+      </div>
+      <div class="card-body" style="padding-bottom:8px">
+        <div class="section-grid" style="gap:8px;margin-bottom:0">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#c0392b;margin-bottom:4px">▲ 正向驱动因子</div>
+            <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false">存储芯片涨价超预期，HBM爆发（<strong>强↑↑</strong>）</div></div>
+            <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false">国产材料进入晶圆厂量产验证（<strong>强↑↑</strong>）</div></div>
+            <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false">十五五规划强调半导体国产化攻坚（<strong>强↑↑</strong>）</div></div>
+            <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false">日本DCS反倾销立案催化（2026-01）（<strong>强↑↑</strong>）</div></div>
+            <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false">北向资金回流，公募抱团电子赛道（<strong>中↑</strong>）</div></div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#1a9e5a;margin-bottom:4px">▼ 负向制约因子</div>
+            <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false">硅片ASP仍承压，沪硅/立昂微持续亏损（<strong>中↓</strong>）</div></div>
+            <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false">大基金一期减持沪硅等核心标的（<strong>中↓</strong>）</div></div>
+            <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false">估值已高，基本面验证压力（<strong>中↓</strong>）</div></div>
+            <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false">中美贸易谈判缓和边际弱化逻辑（<strong>弱↓</strong>）</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================== -->
+<!-- ROW 2: 国产替代进度 + 品类结构 + 销售费用率   -->
+<!-- =============================================== -->
+<div class="section-grid">
+
+  <!-- 国产替代进度 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge bg-teal">3.1</div>
+      <span contenteditable="false">行业趋势——国产替代进度（2025-2026E）</span>
+      <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+    </div>
+    <div class="card-body">
+      <div class="highlight-box green">
+        <strong contenteditable="false">结论：国产替代逻辑未逆转，仍在加速，但节奏存在扰动</strong><br>
+        <span contenteditable="false">加速信号：日本DCS反倾销立案（2026-01）、中芯/华虹扩产持续国产采购、大基金三期参与扶持</span><br>
+        <span contenteditable="false">扰动信号：中美贸易谈判进展，若部分管制放松则短期催化减弱，中长期逻辑不变</span>
+      </div>
+
+      <div class="chart-label" style="margin-top:8px">主要材料品类国产化率与趋势</div>
+      <div class="chart-container-sm"><canvas id="domesticChart"></canvas></div>
+
+      <div class="scroll-table" style="margin-top:8px">
+        <table>
+          <thead>
+            <tr><th>材料品类</th><th>全球规模</th><th>国产化率</th><th>趋势</th><th>受益龙头</th></tr>
+          </thead>
+          <tbody>
+            <tr><td contenteditable="false">CMP抛光液</td><td contenteditable="false">~15亿美元/年</td><td contenteditable="false">20-25%</td><td class="arr-up" contenteditable="false">↑↑加速</td><td contenteditable="false">安集、鼎龙</td></tr>
+            <tr><td contenteditable="false">高纯靶材</td><td contenteditable="false">~30亿美元/年</td><td contenteditable="false">30-35%</td><td class="arr-up" contenteditable="false">↑持续</td><td contenteditable="false">江丰电子</td></tr>
+            <tr><td contenteditable="false">前驱体CVD/ALD</td><td contenteditable="false">~20亿美元/年</td><td contenteditable="false">15-25%</td><td class="arr-up" contenteditable="false">↑↑加速</td><td contenteditable="false">雅克科技</td></tr>
+            <tr><td contenteditable="false">特种气体</td><td contenteditable="false">~40亿美元/年</td><td contenteditable="false">10-15%</td><td class="arr-up" contenteditable="false">↑↑加速</td><td contenteditable="false">中船特气</td></tr>
+            <tr><td contenteditable="false">硅片（12英寸）</td><td contenteditable="false">~80亿美元/年</td><td contenteditable="false">&lt;10%</td><td class="arr-up" contenteditable="false">↑突破初期</td><td contenteditable="false">沪硅产业</td></tr>
+            <tr><td contenteditable="false">光刻胶（KrF）</td><td contenteditable="false">~20亿美元/年</td><td contenteditable="false">3-5%</td><td class="arr-eq" contenteditable="false">→验证中</td><td contenteditable="false">南大光电</td></tr>
+            <tr><td contenteditable="false">SiC衬底</td><td contenteditable="false">~10亿美元/年</td><td contenteditable="false">15-20%</td><td class="arr-up" contenteditable="false">↑放量</td><td contenteditable="false">天岳先进</td></tr>
+            <tr><td contenteditable="false">石英材料</td><td contenteditable="false">~15亿美元/年</td><td contenteditable="false">25-30%</td><td class="arr-up" contenteditable="false">↑稳步</td><td contenteditable="false">石英股份</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:10px;color:#999;margin-top:4px" contenteditable="false">数据来源：各公司年报、申万宏源、招商证券综合估算；置信度：中</div>
+    </div>
+  </div>
+
+  <!-- 渠道与品类 + 销售费用率 -->
+  <div style="display:flex;flex-direction:column;gap:14px;">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="badge bg-orange">3.2</div>
+        <span contenteditable="false">渠道与品类结构——高增长赛道与费率变化</span>
+        <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+      </div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div class="chart-label">销售费用率变化（2025A → 2026Q1）</div>
+            <div class="chart-container-sm"><canvas id="opexChart"></canvas></div>
+          </div>
+          <div>
+            <div class="chart-label">高增长品类GMV占比结构（2026E估）</div>
+            <div class="donut-container"><canvas id="donutChart"></canvas></div>
+            <div class="legend-row">
+              <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div><span contenteditable="false">CMP抛光液</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#e67e22"></div><span contenteditable="false">前驱体</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#f1c40f"></div><span contenteditable="false">靶材</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#2ecc71"></div><span contenteditable="false">特种气体</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div><span contenteditable="false">硅片</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#9b59b6"></div><span contenteditable="false">光刻胶</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#1abc9c"></div><span contenteditable="false">SiC衬底</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#95a5a6"></div><span contenteditable="false">其他</span></div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div style="font-size:11px;font-weight:700;color:#1a2b45;margin-bottom:5px">🔥 高增长赛道与红利品类</div>
+        <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false"><strong>电镀液</strong>：安集科技2026Q1量产销售，继CMP后的第二曲线（来源：华创2026-04）</div></div>
+        <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false"><strong>高端靶材</strong>：江丰电子毛利率连续8个季度改善，铝铜以上级别占比提升</div></div>
+        <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>前驱体（HBM专用）</strong>：雅克科技HBM需求放量，前驱体增速>30%</div></div>
+        <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>超高纯特气</strong>：中船特气氟化氢供不应求，产能全部锁定</div></div>
+        <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false"><strong>ArF光刻胶</strong>：南大光电全年最大催化剂，量产公告将触发重估</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="badge bg-green">3.3</div>
+        <span contenteditable="false">渠道变化与品牌拓展趋势</span>
+        <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+      </div>
+      <div class="card-body">
+        <div class="scroll-table">
+          <table>
+            <thead>
+              <tr><th>公司</th><th>渠道策略</th><th>2025A销售费率</th><th>2026Q1</th><th>变化</th></tr>
+            </thead>
+            <tbody>
+              <tr><td contenteditable="false"><strong>安集科技</strong></td><td contenteditable="false">自研磨料降成本，拓展电镀液B端直销</td><td contenteditable="false">~5.8%</td><td contenteditable="false">~5.2%</td><td class="arr-dn" contenteditable="false">↓规模效应</td></tr>
+              <tr><td contenteditable="false"><strong>雅克科技</strong></td><td contenteditable="false">战略投资SK海力士供应链绑定</td><td contenteditable="false">~2.1%</td><td contenteditable="false">~2.0%</td><td class="arr-eq" contenteditable="false">→稳定</td></tr>
+              <tr><td contenteditable="false"><strong>江丰电子</strong></td><td contenteditable="false">客户直供模式，剥离LCD靶材聚焦半导体</td><td contenteditable="false">~0.7%</td><td contenteditable="false">~0.6%</td><td class="arr-dn" contenteditable="false">↓极低且稳</td></tr>
+              <tr><td contenteditable="false"><strong>鼎龙股份</strong></td><td contenteditable="false">开拓韩日CMP垫客户，境外收入占比提升</td><td contenteditable="false">~3.2%</td><td contenteditable="false">—</td><td class="arr-up" contenteditable="false">↑海外拓展</td></tr>
+              <tr><td contenteditable="false"><strong>沪硅产业</strong></td><td contenteditable="false">直销为主，大基金持股背景下稳扎稳打</td><td contenteditable="false">~2.9%</td><td contenteditable="false">~2.3%</td><td class="arr-dn" contenteditable="false">↓下降</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:10px;color:#999;margin-top:4px" contenteditable="false">数据来源：各公司财报/季报，腾讯自选股（置信度：中高）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================== -->
+<!-- ROW 3: 重点公司标的分析（大市值）              -->
+<!-- =============================================== -->
+<div class="section-full">
+  <div class="card">
+    <div class="card-header">
+      <div class="badge bg-purple">4</div>
+      <span contenteditable="false">A股半导体材料重点公司深度分析与投资建议（按市值排序）</span>
+      <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+    </div>
+    <div class="card-body">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+        <!-- 左：业绩预期图 -->
+        <div>
+          <div class="chart-label">核心公司2026E净利润增速预期（%，机构一致预期）</div>
+          <div class="chart-container-md"><canvas id="epsGrowthChart"></canvas></div>
+          <div class="chart-label" style="margin-top:8px">核心公司2026E PE倍数对比</div>
+          <div class="chart-container-md"><canvas id="peChart"></canvas></div>
+        </div>
+
+        <!-- 右：投资优先级 -->
+        <div>
+          <div class="sec-title"><div class="sec-num">★</div>综合投资优先级排序</div>
+          <div class="stock-grid">
+
+            <div class="stock-card" style="--accent:#c0392b">
+              <div><span class="stock-name" contenteditable="false">安集科技</span><span class="stock-code" contenteditable="false">sh688019</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥285.73</span>
+                <span class="stock-chg chg-up" contenteditable="false">+31.9%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 45.3x | 市值500亿</div>
+              <div class="star-row" contenteditable="false">★★★★★</div>
+              <div class="stock-desc" contenteditable="false">业绩确定性最高，电镀液第二曲线2026Q1兑现，自研磨料驱动毛利率持续提升</div>
+            </div>
+
+            <div class="stock-card" style="--accent:#c0392b">
+              <div><span class="stock-name" contenteditable="false">雅克科技</span><span class="stock-code" contenteditable="false">sz002409</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥114.18</span>
+                <span class="stock-chg chg-up" contenteditable="false">+54.0%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 38.2x | 市值543亿</div>
+              <div class="star-row" contenteditable="false">★★★★★</div>
+              <div class="stock-desc" contenteditable="false">前驱体+光刻胶双赛道，HBM需求驱动高增，5月13日单日主力净买4.6亿</div>
+            </div>
+
+            <div class="stock-card" style="--accent:#e67e22">
+              <div><span class="stock-name" contenteditable="false">江丰电子</span><span class="stock-code" contenteditable="false">sz300666</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥188.29</span>
+                <span class="stock-chg chg-up" contenteditable="false">+103.3%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 59.2x | 市值500亿</div>
+              <div class="star-row" contenteditable="false">★★★★</div>
+              <div class="stock-desc" contenteditable="false">靶材+零部件双轮，2026E净利增速+70.3%，毛利率连续8季度改善</div>
+            </div>
+
+            <div class="stock-card" style="--accent:#e67e22">
+              <div><span class="stock-name" contenteditable="false">鼎龙股份</span><span class="stock-code" contenteditable="false">sz300054</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥69.71</span>
+                <span class="stock-chg chg-up" contenteditable="false">+85.7%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 60.8x | 市值661亿</div>
+              <div class="star-row" contenteditable="false">★★★★</div>
+              <div class="stock-desc" contenteditable="false">CMP抛光垫盈利弹性大，2026E净利+50.8%，韩日客户突破是最大催化剂</div>
+            </div>
+
+            <div class="stock-card" style="--accent:#3498db">
+              <div><span class="stock-name" contenteditable="false">石英股份</span><span class="stock-code" contenteditable="false">sh603688</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥70.21</span>
+                <span class="stock-chg chg-up" contenteditable="false">+92.6%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 95.4x | 市值380亿</div>
+              <div class="star-row" contenteditable="false">★★★</div>
+              <div class="stock-desc" contenteditable="false">石英材料受益扩产，净利2026E+156.6%爆发，高PE需持续超预期验证</div>
+            </div>
+
+            <div class="stock-card" style="--accent:#3498db">
+              <div><span class="stock-name" contenteditable="false">沪硅产业</span><span class="stock-code" contenteditable="false">sh688126</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥23.89</span>
+                <span class="stock-chg chg-up" contenteditable="false">+11.1%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E亏损8.2亿 | 市值790亿</div>
+              <div class="star-row" contenteditable="false">★★★</div>
+              <div class="stock-desc" contenteditable="false">12英寸量拐点已至，持续亏损，2028E预计扭亏，机构目标价21.4元（已倒挂）</div>
+            </div>
+
+            <div class="stock-card" style="--accent:#9b59b6">
+              <div><span class="stock-name" contenteditable="false">南大光电</span><span class="stock-code" contenteditable="false">sz300346</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥54.36</span>
+                <span class="stock-chg chg-up" contenteditable="false">+27.2%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 87.0x | 市值376亿</div>
+              <div class="star-row" contenteditable="false">★★</div>
+              <div class="stock-desc" contenteditable="false">ArF光刻胶战略价值极高，量产公告前高风险高回报，验证周期不确定</div>
+            </div>
+
+            <div class="stock-card" style="--accent:#e74c3c">
+              <div><span class="stock-name" contenteditable="false">中船特气</span><span class="stock-code" contenteditable="false">sh688146</span></div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span class="stock-price" contenteditable="false">¥139.77</span>
+                <span class="stock-chg chg-up" contenteditable="false">+246.4%</span>
+              </div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 140.6x | 市值740亿</div>
+              <div class="star-row" contenteditable="false">★</div>
+              <div class="stock-desc" contenteditable="false">特气稀缺性强，涨幅246%估值极度透支，流通比仅27%，解禁压力高</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================== -->
+<!-- ROW 4: 分歧对比图 + 跟踪指标 + 风险           -->
+<!-- =============================================== -->
+<div class="section-grid-3">
+
+  <!-- 分歧对比 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge bg-blue">4.1</div>
+      <span contenteditable="false">多空分歧细节（核心标的）</span>
+      <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+    </div>
+    <div class="card-body">
+      <div style="font-size:11px;font-weight:700;color:#1a2b45;margin-bottom:6px" contenteditable="false">安集科技</div>
+      <div class="con-row">
+        <div class="con-pill con-bull" contenteditable="false">电镀液量产打开第二曲线，目标价290-310元（华创/中金）</div>
+        <div class="con-pill con-bear" contenteditable="false">竞争者涌入CMP赛道，市占率天花板临近</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#1a2b45;margin:6px 0" contenteditable="false">雅克科技</div>
+      <div class="con-row">
+        <div class="con-pill con-bull" contenteditable="false">前驱体+光刻胶平台型逻辑，高溢价合理（申万宏源）</div>
+        <div class="con-pill con-bear" contenteditable="false">光刻胶收入体量尚小，543亿市值已透支（中金）</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#1a2b45;margin:6px 0" contenteditable="false">沪硅产业</div>
+      <div class="con-row">
+        <div class="con-pill con-bull" contenteditable="false">12英寸唯一规模大厂，战略价值稀缺，PB仅4.69x</div>
+        <div class="con-pill con-bear" contenteditable="false">目标价21.4元（机构均值），当前23.89元已高于目标价</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#1a2b45;margin:6px 0" contenteditable="false">中船特气</div>
+      <div class="con-row">
+        <div class="con-pill con-bull" contenteditable="false">氟化氢国产替代稀缺性，筹码稀缺（流通比27%）</div>
+        <div class="con-pill con-bear" contenteditable="false">140x PE极度透支，解禁风险极高</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#1a2b45;margin:6px 0" contenteditable="false">江丰电子</div>
+      <div class="con-row">
+        <div class="con-pill con-bull" contenteditable="false">靶材+零部件双轮驱动，2026E净利+70.3%</div>
+        <div class="con-pill con-bear" contenteditable="false">59x PE偏高，美日靶材龙头竞争护城河深</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关键跟踪指标 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge bg-teal">5</div>
+      <span contenteditable="false">关键跟踪指标汇总</span>
+      <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+    </div>
+    <div class="card-body">
+      <div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px">🔴 最高优先级（随时跟踪）</div>
+      <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false"><strong>ArF光刻胶量产公告</strong>（南大光电）→ 触发整体板块重估，一旦公告将是全年最大α</div></div>
+      <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false"><strong>中美技术管制政策动向</strong> → 国产替代逻辑核心扰动变量，双向风险</div></div>
+      <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false"><strong>中船特气解禁时间表</strong> → 流通盘极小，解禁可能导致剧烈波动</div></div>
+      <div style="font-size:11px;font-weight:700;color:#f39c12;margin:8px 0 6px">🟡 季度跟踪指标</div>
+      <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>硅片12英寸ASP</strong>（每季度）→ 沪硅/立昂微盈利拐点核心判断</div></div>
+      <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>前驱体/靶材收入增速</strong>（雅克/江丰季报）→ 存储景气持续性验证</div></div>
+      <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>安集科技电镀液销售额</strong> → 第二曲线成长节奏（目标全年>5亿）</div></div>
+      <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>存储芯片合约价走势</strong>（DRAM/NAND）→ 前驱体/靶材需求能见度领先指标</div></div>
+      <div style="font-size:11px;font-weight:700;color:#27ae60;margin:8px 0 6px">🟢 长线跟踪指标</div>
+      <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false"><strong>大基金三期持仓变动</strong> → 产业资本信号（按公告）</div></div>
+      <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false"><strong>鼎龙股份韩日客户认证</strong> → CMP垫海外突破节点</div></div>
+      <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false"><strong>天岳先进6英寸SiC达产</strong> → 目标2026年底</div></div>
+    </div>
+  </div>
+
+  <!-- 风险提示 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge bg-orange">6</div>
+      <span contenteditable="false">风险提示与综合评分</span>
+      <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
+    </div>
+    <div class="card-body">
+      <div style="font-size:11px;font-weight:700;color:#1a2b45;margin-bottom:8px">六大核心风险</div>
+      <div class="highlight-box red">
+        <strong contenteditable="false">①估值风险</strong>：<span contenteditable="false">板块整体PE 50-140x，需业绩高增速持续消化；若增速放缓调整幅度较大</span>
+      </div>
+      <div class="highlight-box red">
+        <strong contenteditable="false">②中美关系扰动</strong>：<span contenteditable="false">中美技术博弈节奏不确定，若管制放松则国产替代叙事边际减弱</span>
+      </div>
+      <div class="highlight-box orange">
+        <strong contenteditable="false">③存储周期逆转</strong>：<span contenteditable="false">存储若转向下行，前驱体/靶材等周期性需求将承压</span>
+      </div>
+      <div class="highlight-box orange">
+        <strong contenteditable="false">④竞争加剧</strong>：<span contenteditable="false">A股半导体材料公司从~20家增至逾120家，赛道拥挤度大幅上升</span>
+      </div>
+      <div class="highlight-box">
+        <strong contenteditable="false">⑤大基金减持</strong>：<span contenteditable="false">大基金一期持股较重，持续减持形成供给压力</span>
+      </div>
+      <div class="highlight-box">
+        <strong contenteditable="false">⑥流动性风险</strong>：<span contenteditable="false">中船特气等流通盘极小，机构进出可能造成剧烈波动</span>
+      </div>
+
+      <hr class="divider">
+      <div style="font-size:11px;font-weight:700;color:#1a2b45;margin-bottom:6px">数据置信度说明</div>
+      <div class="progress-row"><div class="progress-label" contenteditable="false">行情/市值/PE</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:95%;background:#27ae60"></div></div><div class="progress-val" style="color:#27ae60" contenteditable="false">高</div></div>
+      <div class="progress-row"><div class="progress-label" contenteditable="false">一致预期数据</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:85%;background:#27ae60"></div></div><div class="progress-val" style="color:#27ae60" contenteditable="false">高</div></div>
+      <div class="progress-row"><div class="progress-label" contenteditable="false">国产化率估算</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:60%;background:#f39c12"></div></div><div class="progress-val" style="color:#f39c12" contenteditable="false">中</div></div>
+      <div class="progress-row"><div class="progress-label" contenteditable="false">销售费用率</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:70%;background:#f39c12"></div></div><div class="progress-val" style="color:#f39c12" contenteditable="false">中高</div></div>
+      <div class="progress-row"><div class="progress-label" contenteditable="false">市场观点引用</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:45%;background:#e74c3c"></div></div><div class="progress-val" style="color:#e74c3c" contenteditable="false">中低</div></div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- end .page -->
+
+<!-- ===== FOOTER ===== -->
+<div class="page-footer">
+  <span contenteditable="false">本报告仅用于机构内部路演参考，所有数据均来自公开市场信息，不构成任何投资建议。投资有风险，决策需谨慎。</span><br>
+  <span contenteditable="false">数据来源：腾讯自选股行情数据接口（2026-05-18）、各券商研报（申万宏源、中金、国泰海通、中银、招商、华创、国信等） | 制作日期：2026年5月18日</span>
+</div>
+
+<!-- ===== CHARTS SCRIPTS ===== -->
+<script>
+// Global defaults
+Chart.defaults.font.family = "'PingFang SC','Microsoft YaHei',sans-serif";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#555';
+
+// ─── 1. 申万行业20日涨幅 ───
+new Chart(document.getElementById('sectorChart'), {
+  type: 'bar',
+  data: {
+    labels: ['半导体','电子化学品Ⅱ','电子元件','消费电子','计算机','汽车电子','光学光电','通信设备','军工','机械设备'],
+    datasets: [{
+      label: '20日涨幅(%)',
+      data: [27.03, 25.47, 18.2, 16.5, 14.8, 13.4, 12.1, 11.8, 10.6, 9.2],
+      backgroundColor: ['#c0392b','#e74c3c','#e67e22','#e67e22','#f39c12','#f39c12','#3498db','#3498db','#2980b9','#2980b9'],
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: '#eef1f5' }, ticks: { callback: v => v + '%' } },
+      y: { grid: { display: false }, ticks: { font: { size: 9 } } }
+    }
+  }
+});
+
+// ─── 2. 核心标的年内涨幅 ───
+new Chart(document.getElementById('stockYtdChart'), {
+  type: 'bar',
+  data: {
+    labels: ['中船特气','江丰电子','石英股份','鼎龙股份','有研新材','雅克科技','立昂微','南大光电','安集科技','沪硅产业'],
+    datasets: [{
+      data: [246.4, 103.3, 92.6, 85.7, 52.5, 54.0, 44.9, 27.2, 31.9, 11.1],
+      backgroundColor(ctx) {
+        const v = ctx.raw;
+        return v > 100 ? '#c0392b' : v > 50 ? '#e74c3c' : v > 20 ? '#e67e22' : '#3498db';
+      },
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: '#eef1f5' }, ticks: { callback: v => v + '%' } },
+      y: { grid: { display: false }, ticks: { font: { size: 9 } } }
+    }
+  }
+});
+
+// ─── 3. 国产替代品类进度 ───
+new Chart(document.getElementById('domesticChart'), {
+  type: 'bar',
+  data: {
+    labels: ['石英材料','高纯靶材','CMP抛光液','SiC衬底','前驱体','特种气体','硅片12英寸','光刻胶KrF'],
+    datasets: [
+      {
+        label: '当前国产化率(%)',
+        data: [27.5, 32, 22.5, 17.5, 20, 12.5, 8, 4],
+        backgroundColor: '#1e6db5',
+        borderRadius: 2,
+      },
+      {
+        label: '2027E目标国产化率(%)',
+        data: [35, 42, 35, 28, 33, 22, 18, 12],
+        backgroundColor: 'rgba(30,109,181,0.3)',
+        borderRadius: 2,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 9 } } } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+      y: { grid: { color: '#eef1f5' }, ticks: { callback: v => v + '%' }, max: 50 }
+    }
+  }
+});
+
+// ─── 4. 销售费用率对比 ───
+new Chart(document.getElementById('opexChart'), {
+  type: 'bar',
+  data: {
+    labels: ['安集科技','雅克科技','江丰电子','鼎龙股份','沪硅产业'],
+    datasets: [
+      { label: '2025A', data: [5.8, 2.1, 0.7, 3.2, 2.9], backgroundColor: '#1e6db5', borderRadius: 2 },
+      { label: '2026Q1', data: [5.2, 2.0, 0.6, null, 2.3], backgroundColor: '#e74c3c', borderRadius: 2 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 9 } } } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+      y: { grid: { color: '#eef1f5' }, ticks: { callback: v => v + '%' } }
+    }
+  }
+});
+
+// ─── 5. 品类GMV占比甜甜圈 ───
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['CMP抛光液','前驱体','靶材','特种气体','硅片','光刻胶','SiC衬底','其他'],
+    datasets: [{
+      data: [14, 18, 25, 16, 8, 4, 8, 7],
+      backgroundColor: ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#1abc9c','#95a5a6'],
+      borderWidth: 1, borderColor: '#fff',
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.raw + '%' } }
+    }
+  }
+});
+
+// ─── 6. 净利润增速预期 ───
+new Chart(document.getElementById('epsGrowthChart'), {
+  type: 'bar',
+  data: {
+    labels: ['安集科技','江丰电子','鼎龙股份','石英股份','南大光电','雅克科技','菲利华'],
+    datasets: [{
+      label: '2026E净利润增速(%)',
+      data: [59.9, 70.3, 50.8, 156.6, 40.7, 33.9, 22.0],
+      backgroundColor(ctx) {
+        const v = ctx.raw;
+        return v > 100 ? '#c0392b' : v > 60 ? '#e74c3c' : v > 40 ? '#e67e22' : '#3498db';
+      },
+      borderRadius: 3
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+      y: { grid: { color: '#eef1f5' }, ticks: { callback: v => v + '%' } }
+    }
+  }
+});
+
+// ─── 7. PE对比 ───
+new Chart(document.getElementById('peChart'), {
+  type: 'bar',
+  data: {
+    labels: ['中船特气','石英股份','南大光电','江丰电子','鼎龙股份','安集科技','雅克科技','菲利华'],
+    datasets: [{
+      label: '2026E PE(x)',
+      data: [140.6, 95.4, 87.0, 59.2, 60.8, 45.3, 38.2, 121],
+      backgroundColor(ctx) {
+        const v = ctx.raw;
+        return v > 120 ? '#c0392b' : v > 80 ? '#e67e22' : v > 55 ? '#f39c12' : '#27ae60';
+      },
+      borderRadius: 3
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      annotation: {}
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+      y: { grid: { color: '#eef1f5' }, ticks: { callback: v => v + 'x' } }
+    }
+  }
+});
+
+// ===== EDIT MODE & COPY LOGIC =====
+
+let editMode = false;
+// Store original text for reset
+const originalTexts = new Map();
+
+function getAllEditables() {
+  return document.querySelectorAll('[contenteditable]');
+}
+
+function toggleEditMode() {
+  editMode = !editMode;
+  const btn = document.getElementById('btnToggleEdit');
+
+  if (editMode) {
+    // Save originals before first edit
+    getAllEditables().forEach(el => {
+      if (!originalTexts.has(el)) {
+        originalTexts.set(el, el.innerHTML);
+      }
+      el.setAttribute('contenteditable', 'true');
+    });
+    document.body.classList.add('edit-mode');
+    btn.classList.add('active');
+    btn.textContent = '✅ 退出编辑模式';
+  } else {
+    getAllEditables().forEach(el => {
+      el.setAttribute('contenteditable', 'false');
+    });
+    document.body.classList.remove('edit-mode');
+    btn.classList.remove('active');
+    btn.textContent = '✏️ 开启编辑模式';
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || '已复制 ✓';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast('已复制 ✓'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('已复制 ✓');
+  }
+}
+
+function copyAllText() {
+  const page = document.querySelector('.page');
+  const footer = document.querySelector('.page-footer');
+  let text = '';
+  // Get all text content from editable elements in reading order
+  const elems = document.querySelectorAll('[contenteditable]');
+  const seen = new Set();
+  elems.forEach(el => {
+    const t = el.innerText.trim();
+    if (t && !seen.has(t)) {
+      seen.add(t);
+      text += t + '\n';
+    }
+  });
+  copyText(text);
+}
+
+function copyAsMarkdown() {
+  let md = '';
+  // Title
+  const title = document.getElementById('reportTitle');
+  if (title) md += '# ' + title.innerText.trim() + '\n\n';
+
+  // All cards
+  document.querySelectorAll('.card').forEach(card => {
+    const header = card.querySelector('.card-header span[contenteditable]');
+    if (header) md += '## ' + header.innerText.trim() + '\n\n';
+
+    // Tables
+    card.querySelectorAll('table').forEach(tbl => {
+      const rows = tbl.querySelectorAll('tr');
+      rows.forEach((row, i) => {
+        const cells = row.querySelectorAll('th, td');
+        const line = '| ' + Array.from(cells).map(c => c.innerText.trim().replace(/\n/g,' ')).join(' | ') + ' |';
+        md += line + '\n';
+        if (i === 0) {
+          md += '| ' + Array.from(cells).map(() => '---').join(' | ') + ' |\n';
+        }
+      });
+      md += '\n';
+    });
+
+    // Text blocks
+    card.querySelectorAll('.highlight-box, .signal-item div[contenteditable], .con-pill[contenteditable]').forEach(el => {
+      const t = el.innerText.trim();
+      if (t) md += '- ' + t + '\n';
+    });
+
+    md += '\n';
+  });
+
+  copyText(md);
+  showToast('已复制为 Markdown ✓');
+}
+
+function copyCard(btn) {
+  const card = btn.closest('.card');
+  if (!card) return;
+  let text = '';
+  const header = card.querySelector('.card-header span[contenteditable]');
+  if (header) text += '【' + header.innerText.trim() + '】\n\n';
+
+  // Tables
+  card.querySelectorAll('table').forEach(tbl => {
+    const rows = tbl.querySelectorAll('tr');
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('th, td');
+      text += Array.from(cells).map(c => c.innerText.trim().replace(/\n/g,' ')).join('\t') + '\n';
+    });
+    text += '\n';
+  });
+
+  // Other text content
+  const elems = card.querySelectorAll('[contenteditable]');
+  const seen = new Set();
+  elems.forEach(el => {
+    if (el === header) return;
+    // Skip if ancestor already added
+    const t = el.innerText.trim();
+    if (t && t.length > 2 && !seen.has(t)) {
+      // avoid duplicates from parent/child both being editable
+      let skip = false;
+      seen.forEach(s => { if (s.includes(t) || t.includes(s)) skip = true; });
+      if (!skip) {
+        seen.add(t);
+        text += t + '\n';
+      }
+    }
+  });
+
+  copyText(text);
+}
+
+function resetAll() {
+  if (!confirm('确认重置所有编辑内容？此操作不可撤销。')) return;
+  originalTexts.forEach((html, el) => {
+    el.innerHTML = html;
+  });
+  showToast('已重置 ✓');
+}
+</script>
+</body>
+</html>

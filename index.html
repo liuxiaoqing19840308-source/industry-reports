@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深度行业研究报告 — 主页</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #0f1923 0%, #1a2b45 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
+  .sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 48px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 320px);
+    gap: 28px;
+  }
+  .card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 32px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: #fff;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .card:hover {
+    background: rgba(255,255,255,0.13);
+    border-color: rgba(255,255,255,0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .card-icon { font-size: 38px; }
+  .card-title { font-size: 17px; font-weight: 700; line-height: 1.4; }
+  .card-desc { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+  .card-meta { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: auto; }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    width: fit-content;
+  }
+  .badge-blue { background: rgba(52,152,219,0.25); color: #5dade2; }
+  .badge-green { background: rgba(46,204,113,0.25); color: #2ecc71; }
+  .badge-orange { background: rgba(243,156,18,0.25); color: #f39c12; }
+  .footer {
+    margin-top: 56px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+  }
+  .update-info {
+    margin-top: 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot-live {
+    width: 7px; height: 7px;
+    background: #2ecc71;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+
+<h1>📊 深度行业研究报告</h1>
+<div class="sub">机构路演版 · 自动化更新 · 每周一早上刷新数据</div>
+
+<div class="grid">
+
+  <!-- 机器人 -->
+  <a class="card" href="机器人行业深度研究报告_dashboard.html">
+    <div class="card-icon">🤖</div>
+    <div>
+      <span class="badge badge-blue">人形机器人</span>
+    </div>
+    <div class="card-title">机器人（人形）行业<br>深度研究报告</div>
+    <div class="card-desc">
+      核心标的：汇川技术、绿的谐波、双环传动、拓普集团、鸣志电器、埃斯顿、奥普特、中大力德<br>
+      覆盖：行情数据 · PE估值 · 多空分歧 · 行情复盘
+    </div>
+    <div class="card-meta">最后更新：2026-05-18</div>
+  </a>
+
+  <!-- 商业航天 -->
+  <a class="card" href="商业航天行业深度研究报告_dashboard.html">
+    <div class="card-icon">🚀</div>
+    <div>
+      <span class="badge badge-green">商业航天</span>
+    </div>
+    <div class="card-title">商业航天行业<br>深度研究报告</div>
+    <div class="card-desc">
+      核心标的：中国卫星、航天电子、海格通信、天银机电、盟升电子、*ST航图<br>
+      覆盖：星座进度 · 产业链份额 · 多空分歧 · 行情复盘
+    </div>
+    <div class="card-meta">最后更新：2026-05-18</div>
+  </a>
+
+  <!-- 半导体材料 -->
+  <a class="card" href="半导体材料研究报告_dashboard.html">
+    <div class="card-icon">💎</div>
+    <div>
+      <span class="badge badge-orange">半导体材料</span>
+    </div>
+    <div class="card-title">半导体材料行业<br>深度研究报告</div>
+    <div class="card-desc">
+      核心标的：安集科技、雅克科技、江丰电子、鼎龙股份、石英股份、沪硅产业、中船特气、南大光电<br>
+      覆盖：材料国产化 · 供需分析 · 多空分歧 · 行情复盘
+    </div>
+    <div class="card-meta">最后更新：2026-05-18</div>
+  </a>
+
+</div>
+
+<div class="update-info">
+  <div class="dot-live"></div>
+  <span>自动化更新已启用 · 每周一 08:00 自动刷新行情数据</span>
+</div>
+
+<div class="footer">内部参考 · 不构成投资建议 · Powered by WorkBuddy</div>
+
+</body>
+</html>
