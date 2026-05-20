@@ -606,69 +606,69 @@ document.addEventListener('keydown', e => {
     </div>
   </div>
 
-  <!-- 渠道与品类 + 销售费用率 -->
-  <div style="display:flex;flex-direction:column;gap:14px;">
-
-    <div class="card">
-      <div class="card-header">
-        <div class="badge bg-orange">3.2</div>
-        <span contenteditable="false">渠道与品类结构——高增长赛道与费率变化</span>
-        <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
-      </div>
-      <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div>
-            <div class="chart-label">销售费用率变化（2025A → 2026Q1）</div>
-            <div class="chart-container-sm"><canvas id="opexChart"></canvas></div>
-          </div>
-          <div>
-            <div class="chart-label">高增长品类GMV占比结构（2026E估）</div>
-            <div class="donut-container"><canvas id="donutChart"></canvas></div>
-            <div class="legend-row">
-              <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div><span contenteditable="false">CMP抛光液</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:#e67e22"></div><span contenteditable="false">前驱体</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:#f1c40f"></div><span contenteditable="false">靶材</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:#2ecc71"></div><span contenteditable="false">特种气体</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div><span contenteditable="false">硅片</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:#9b59b6"></div><span contenteditable="false">光刻胶</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:#1abc9c"></div><span contenteditable="false">SiC衬底</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:#95a5a6"></div><span contenteditable="false">其他</span></div>
-            </div>
-          </div>
-        </div>
-
-        <hr class="divider">
-        <div style="font-size:11px;font-weight:700;color:#1a2b45;margin-bottom:5px">🔥 高增长赛道与红利品类</div>
-        <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false"><strong>电镀液</strong>：安集科技2026Q1量产销售，继CMP后的第二曲线（来源：华创2026-04）</div></div>
-        <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false"><strong>高端靶材</strong>：江丰电子毛利率连续8个季度改善，铝铜以上级别占比提升</div></div>
-        <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>前驱体（HBM专用）</strong>：雅克科技HBM需求放量，前驱体增速>30%</div></div>
-        <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false"><strong>超高纯特气</strong>：中船特气氟化氢供不应求，产能全部锁定</div></div>
-        <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false"><strong>ArF光刻胶</strong>：南大光电重要催化剂，量产公告将触发重估；目前尚未规模量产，量产落地前市场以"预期定价"为主</div></div>
-      </div>
+  <!-- 品类成长确定性与估值合理性筛选 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge bg-orange">3.2</div>
+      <span contenteditable="false">品类成长确定性与估值合理性筛选（结合Q1实际数据）</span>
+      <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
     </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
 
-    <div class="card">
-      <div class="card-header">
-        <div class="badge bg-green">3.3</div>
-        <span contenteditable="false">渠道变化与品牌拓展趋势</span>
-        <button class="card-copy-btn" onclick="copyCard(this)">📋 复制</button>
-      </div>
-      <div class="card-body">
-        <div class="scroll-table">
-          <table>
-            <thead>
-              <tr><th>公司</th><th>渠道策略</th><th>2025A销售费率</th><th>2026Q1</th><th>变化</th></tr>
-            </thead>
-            <tbody>
-              <tr><td contenteditable="false"><strong>安集科技</strong></td><td contenteditable="false">自研磨料降成本，拓展电镀液B端直销</td><td contenteditable="false">~5.8%</td><td contenteditable="false">~5.2%</td><td class="arr-dn" contenteditable="false">↓规模效应</td></tr>
-              <tr><td contenteditable="false"><strong>雅克科技</strong></td><td contenteditable="false">战略投资SK海力士供应链绑定</td><td contenteditable="false">~2.1%</td><td contenteditable="false">~2.0%</td><td class="arr-eq" contenteditable="false">→稳定</td></tr>
-              <tr><td contenteditable="false"><strong>江丰电子</strong></td><td contenteditable="false">客户直供模式，剥离LCD靶材聚焦半导体</td><td contenteditable="false">~0.7%</td><td contenteditable="false">~0.6%</td><td class="arr-dn" contenteditable="false">↓极低且稳</td></tr>
-              <tr><td contenteditable="false"><strong>鼎龙股份</strong></td><td contenteditable="false">开拓韩日CMP垫客户，境外收入占比提升</td><td contenteditable="false">~3.2%</td><td contenteditable="false">—</td><td class="arr-up" contenteditable="false">↑海外拓展</td></tr>
-              <tr><td contenteditable="false"><strong>沪硅产业</strong></td><td contenteditable="false">直销为主，大基金持股背景下稳扎稳打</td><td contenteditable="false">~2.9%</td><td contenteditable="false">~2.3%</td><td class="arr-dn" contenteditable="false">↓下降</td></tr>
-            </tbody>
-          </table>
+        <!-- 左：品类成长确定性 -->
+        <div>
+          <div class="chart-label">核心品类成长确定性矩阵（2026E）</div>
+          <div class="scroll-table" style="max-height:320px;overflow-y:auto">
+            <table>
+              <thead>
+                <tr><th>品类</th><th>代表公司</th><th>2026E增速</th><th>国产化率</th><th>确定性</th></tr>
+              </thead>
+              <tbody>
+                <tr style="background:#fdf0ee"><td contenteditable="false"><strong>CMP抛光液</strong></td><td contenteditable="false">安集科技</td><td class="arr-up" contenteditable="false">+32%</td><td contenteditable="false">~85%</td><td contenteditable="false">★★★</td></tr>
+                <tr style="background:#fdf0ee"><td contenteditable="false"><strong>电镀液</strong></td><td contenteditable="false">安集科技</td><td class="arr-up" contenteditable="false">新增量</td><td contenteditable="false">~10%</td><td contenteditable="false">★★★</td></tr>
+                <tr style="background:#fef9e7"><td contenteditable="false"><strong>前驱体</strong></td><td contenteditable="false">雅克科技</td><td class="arr-up" contenteditable="false">+15%</td><td contenteditable="false">~20%</td><td contenteditable="false">★★★</td></tr>
+                <tr style="background:#fef9e7"><td contenteditable="false"><strong>高端靶材</strong></td><td contenteditable="false">江丰电子</td><td class="arr-up" contenteditable="false">+70%</td><td contenteditable="false">~35%</td><td contenteditable="false">★★★</td></tr>
+                <tr style="background:#e8f8f0"><td contenteditable="false"><strong>特气（高纯）</strong></td><td contenteditable="false">中船特气</td><td class="arr-up" contenteditable="false">+60%</td><td contenteditable="false">~25%</td><td contenteditable="false">★★★</td></tr>
+                <tr style="background:#e8f8f0"><td contenteditable="false"><strong>硅片（300mm）</strong></td><td contenteditable="false">沪硅产业</td><td class="arr-up" contenteditable="false">减亏中</td><td contenteditable="false">~30%</td><td contenteditable="false">★★</td></tr>
+                <tr style="background:#e8f8f0"><td contenteditable="false"><strong>ArF光刻胶</strong></td><td contenteditable="false">南大光电</td><td class="arr-up" contenteditable="false">+41%</td><td contenteditable="false">~5%</td><td contenteditable="false">★★★</td></tr>
+                <tr style="background:#f0f4ff"><td contenteditable="false"><strong>Quartz/高纯石英</strong></td><td contenteditable="false">石英股份</td><td class="arr-up" contenteditable="false">+155%</td><td contenteditable="false">~40%</td><td contenteditable="false">★★★</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="font-size:10px;color:#999;margin-top:4px" contenteditable="false">数据来源：各公司公告/机构一致预期（置信度：中高）</div>
         </div>
-        <div style="font-size:10px;color:#999;margin-top:4px" contenteditable="false">数据来源：各公司财报/季报，腾讯自选股（置信度：中高）</div>
+
+        <!-- 右：估值合理性筛选 -->
+        <div>
+          <div class="chart-label">估值合理性筛选（PEG + 目标价空间）</div>
+          <div class="scroll-table" style="max-height:320px;overflow-y:auto">
+            <table>
+              <thead>
+                <tr><th>股票</th><th>2026E PE</th><th>PEG</th><th>目标价空间</th><th>结论</th></tr>
+              </thead>
+              <tbody>
+                <tr style="background:#e8f8f0"><td contenteditable="false"><strong>石英股份</strong></td><td contenteditable="false">26.4x</td><td contenteditable="false">0.17</td><td class="arr-up" contenteditable="false">+12%</td><td contenteditable="false">合理偏低</td></tr>
+                <tr style="background:#e8f8f0"><td contenteditable="false"><strong>鼎龙股份</strong></td><td contenteditable="false">16.3x</td><td contenteditable="false">0.32</td><td class="arr-dn" contenteditable="false">-27%</td><td contenteditable="false">合理/目标价滞后</td></tr>
+                <tr style="background:#e8f8f0"><td contenteditable="false"><strong>中船特气</strong></td><td contenteditable="false">18.6x</td><td contenteditable="false">0.31</td><td class="arr-dn" contenteditable="false">-27%</td><td contenteditable="false">合理/目标价滞后</td></tr>
+                <tr style="background:#fef9e7"><td contenteditable="false"><strong>雅克科技</strong></td><td contenteditable="false">40.8x</td><td contenteditable="false">2.71</td><td class="arr-dn" contenteditable="false">-9%</td><td contenteditable="false">偏高</td></tr>
+                <tr style="background:#fef9e7"><td contenteditable="false"><strong>安集科技</strong></td><td contenteditable="false">49.8x</td><td contenteditable="false">1.54</td><td class="arr-eq" contenteditable="false">~0%</td><td contenteditable="false">合理</td></tr>
+                <tr style="background:#fef9e7"><td contenteditable="false"><strong>江丰电子</strong></td><td contenteditable="false">67.0x</td><td contenteditable="false">0.96</td><td class="arr-dn" contenteditable="false">-12%</td><td contenteditable="false">合理/目标价滞后</td></tr>
+                <tr style="background:#fdf0ee"><td contenteditable="false"><strong>南大光电</strong></td><td contenteditable="false">89.1x</td><td contenteditable="false">2.19</td><td class="arr-up" contenteditable="false">+3%</td><td contenteditable="false">偏高</td></tr>
+                <tr style="background:#f0f4ff"><td contenteditable="false"><strong>沪硅产业</strong></td><td contenteditable="false">—</td><td contenteditable="false">—</td><td class="arr-dn" contenteditable="false">-27%</td><td contenteditable="false">亏损/观望</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="font-size:10px;color:#999;margin-top:4px" contenteditable="false">PEG=PE/净利润增速；空间=（机构目标价-现价）/现价（置信度：中）</div>
+
+          <hr class="divider" style="margin:8px 0">
+          <div style="font-size:11px;font-weight:700;color:#1a2b45;margin-bottom:5px">📊 估值结论</div>
+          <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false">合理偏低：石英股份（PEG 0.17，扭亏高增）</div></div>
+          <div class="signal-item"><div class="signal-dot dot-green"></div><div contenteditable="false">合理：鼎龙/中船/江丰（PEG&lt;1，但目标价大幅滞后现价）</div></div>
+          <div class="signal-item"><div class="signal-dot dot-yellow"></div><div contenteditable="false">偏高：雅克/南大（PEG&gt;2，现价已反映预期）</div></div>
+          <div class="signal-item"><div class="signal-dot dot-red"></div><div contenteditable="false">沪硅产业仍亏损，2026E继续亏损，估值无意义</div></div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -705,89 +705,97 @@ document.addEventListener('keydown', e => {
             <div class="stock-card" style="--accent:#c0392b">
               <div><span class="stock-name" contenteditable="false">安集科技</span><span class="stock-code" contenteditable="false">sh688019</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥285.73</span>
-                <span class="stock-chg chg-up" contenteditable="false">+31.9%</span>
+                <span class="stock-price" contenteditable="false">¥304.00</span>
+                <span class="stock-chg chg-up" contenteditable="false">+39.5%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E PE: 45.3x | 市值500亿</div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 49.8x | 市值532亿</div>
               <div class="star-row" contenteditable="false">★★★★★</div>
               <div class="stock-desc" contenteditable="false">业绩确定性最高，电镀液第二曲线2026Q1兑现，自研磨料驱动毛利率持续提升</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：电镀液Q1订单放量 | 自研磨料降本</div>
             </div>
 
             <div class="stock-card" style="--accent:#c0392b">
               <div><span class="stock-name" contenteditable="false">雅克科技</span><span class="stock-code" contenteditable="false">sz002409</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥114.18</span>
-                <span class="stock-chg chg-up" contenteditable="false">+54.0%</span>
+                <span class="stock-price" contenteditable="false">¥115.96</span>
+                <span class="stock-chg chg-up" contenteditable="false">+56.5%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E PE: 38.2x | 市值543亿</div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 40.8x | 市值552亿</div>
               <div class="star-row" contenteditable="false">★★★★★</div>
               <div class="stock-desc" contenteditable="false">前驱体+光刻胶双赛道，HBM需求驱动高增，5月13日单日主力净买4.6亿</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：HBM前驱体订单翻倍 | 光刻胶认证进展</div>
             </div>
 
             <div class="stock-card" style="--accent:#e67e22">
               <div><span class="stock-name" contenteditable="false">江丰电子</span><span class="stock-code" contenteditable="false">sz300666</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥188.29</span>
-                <span class="stock-chg chg-up" contenteditable="false">+103.3%</span>
+                <span class="stock-price" contenteditable="false">¥213.93</span>
+                <span class="stock-chg chg-up" contenteditable="false">+132.5%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E PE: 59.2x | 市值500亿</div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 67.0x | 市值568亿</div>
               <div class="star-row" contenteditable="false">★★★★</div>
               <div class="stock-desc" contenteditable="false">靶材+零部件双轮，2026E净利增速+70.3%，毛利率连续8季度改善</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：存储靶材订单Q1+40% | 毛利率持续改善</div>
             </div>
 
             <div class="stock-card" style="--accent:#e67e22">
               <div><span class="stock-name" contenteditable="false">鼎龙股份</span><span class="stock-code" contenteditable="false">sz300054</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥69.71</span>
-                <span class="stock-chg chg-up" contenteditable="false">+85.7%</span>
+                <span class="stock-price" contenteditable="false">¥77.01</span>
+                <span class="stock-chg chg-up" contenteditable="false">+104.8%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E PE: 60.8x | 市值661亿</div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 16.3x | 市值730亿</div>
               <div class="star-row" contenteditable="false">★★★★</div>
               <div class="stock-desc" contenteditable="false">CMP抛光垫盈利弹性大，2026E净利+50.8%，韩日客户突破是最大催化剂</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：CMP垫韩日订单落地 | Q1净利+50%</div>
             </div>
 
             <div class="stock-card" style="--accent:#3498db">
               <div><span class="stock-name" contenteditable="false">石英股份</span><span class="stock-code" contenteditable="false">sh603688</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥70.21</span>
-                <span class="stock-chg chg-up" contenteditable="false">+92.6%</span>
+                <span class="stock-price" contenteditable="false">¥68.64</span>
+                <span class="stock-chg chg-up" contenteditable="false">+87.6%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E PE: 95.4x | 市值380亿</div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 26.4x | 市值372亿</div>
               <div class="star-row" contenteditable="false">★★★</div>
               <div class="stock-desc" contenteditable="false">石英材料受益扩产，净利2026E+156.6%爆发，高PE需持续超预期验证</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：高纯石英砂认证通过 | Q1净利+156%</div>
             </div>
 
             <div class="stock-card" style="--accent:#3498db">
               <div><span class="stock-name" contenteditable="false">沪硅产业</span><span class="stock-code" contenteditable="false">sh688126</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥23.89</span>
-                <span class="stock-chg chg-up" contenteditable="false">+11.1%</span>
+                <span class="stock-price" contenteditable="false">¥29.52</span>
+                <span class="stock-chg chg-up" contenteditable="false">+36.4%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E亏损8.2亿 | 市值790亿</div>
+              <div class="stock-pe" contenteditable="false">2026E亏损8.2亿 | 市值976亿</div>
               <div class="star-row" contenteditable="false">★★★</div>
               <div class="stock-desc" contenteditable="false">12英寸量拐点已至，持续亏损，2028E预计扭亏，机构目标价21.4元（已倒挂）</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：12英寸订单落地 | 减亏进度</div>
             </div>
 
             <div class="stock-card" style="--accent:#9b59b6">
               <div><span class="stock-name" contenteditable="false">南大光电</span><span class="stock-code" contenteditable="false">sz300346</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥54.36</span>
-                <span class="stock-chg chg-up" contenteditable="false">+27.2%</span>
+                <span class="stock-price" contenteditable="false">¥57.94</span>
+                <span class="stock-chg chg-up" contenteditable="false">+35.9%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E PE: 87.0x | 市值376亿</div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 89.1x | 市值400亿</div>
               <div class="star-row" contenteditable="false">★★</div>
               <div class="stock-desc" contenteditable="false">ArF光刻胶战略价值极高，量产公告前高风险高回报，验证周期不确定</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：ArF光刻胶量产公告（关键！）| Mo源稳健</div>
             </div>
 
             <div class="stock-card" style="--accent:#e74c3c">
               <div><span class="stock-name" contenteditable="false">中船特气</span><span class="stock-code" contenteditable="false">sh688146</span></div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span class="stock-price" contenteditable="false">¥139.77</span>
-                <span class="stock-chg chg-up" contenteditable="false">+246.4%</span>
+                <span class="stock-price" contenteditable="false">¥126.13</span>
+                <span class="stock-chg chg-up" contenteditable="false">+212.2%</span>
               </div>
-              <div class="stock-pe" contenteditable="false">2026E PE: 140.6x | 市值740亿</div>
+              <div class="stock-pe" contenteditable="false">2026E PE: 18.6x | 市值668亿</div>
               <div class="star-row" contenteditable="false">★</div>
               <div class="stock-desc" contenteditable="false">特气稀缺性强，涨幅246%估值极度透支，流通比仅27%，解禁压力高</div>
+              <div style="font-size:10px;color:#1a2b45;margin-top:4px">⚡ 催化：特气长协订单锁定 | 解禁时间表</div>
             </div>
 
           </div>
