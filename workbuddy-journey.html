@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkBuddy · 从安装到交付</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070C18;--surface:#0D1427;--card:#111929;--border:rgba(59,130,246,0.15);
+  --blue:#2563EB;--blue2:#3B82F6;--purple:#7C3AED;--teal:#0D9488;
+  --orange:#EA580C;--green:#16A34A;--pink:#DB2777;--amber:#D97706;
+  --text:#E2E8F0;--muted:#64748B;--accent:#38BDF8;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ── TOP BAR ── */
+.topbar{height:52px;background:rgba(7,12,24,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;z-index:50}
+.topbar-logo{font-size:15px;font-weight:700;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topbar-sep{width:1px;height:20px;background:var(--border)}
+.topbar-title{font-size:13px;color:var(--muted)}
+.topbar-progress{flex:1;display:flex;align-items:center;gap:6px;justify-content:center}
+.tp-step{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .2s;white-space:nowrap}
+.tp-step:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.tp-step.done{color:#4ADE80}
+.tp-step.active{color:var(--accent);background:rgba(37,99,235,.12)}
+.tp-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.tp-step.done .tp-dot{background:#16A34A;border-color:#16A34A;color:#fff}
+.tp-step.active .tp-dot{background:var(--blue);border-color:var(--blue);color:#fff}
+.tp-arrow{color:var(--border);font-size:10px}
+
+/* ── MAIN LAYOUT ── */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-head{padding:20px 16px 10px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.stage-nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;position:relative}
+.stage-nav-item:hover{background:rgba(255,255,255,.04)}
+.stage-nav-item.active{background:rgba(37,99,235,.1);border-left-color:var(--blue)}
+.stage-nav-item.done{border-left-color:#16A34A}
+.sni-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sni-meta{flex:1}
+.sni-num{font-size:10px;color:var(--muted);line-height:1}
+.sni-label{font-size:13px;font-weight:600;color:var(--text);margin-top:1px}
+.sni-check{font-size:14px;color:#4ADE80;opacity:0;transition:opacity .3s}
+.stage-nav-item.done .sni-check{opacity:1}
+
+.sidebar-foot{padding:16px;margin-top:auto;border-top:1px solid var(--border)}
+.progress-bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--accent));border-radius:2px;transition:width .5s ease}
+.progress-label{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* ── CONTENT AREA ── */
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative}
+
+/* SLIDES CONTAINER */
+.slides{flex:1;overflow:hidden;position:relative}
+.slide{position:absolute;inset:0;overflow-y:auto;padding:32px 40px;opacity:0;pointer-events:none;transform:translateX(40px);transition:all .35s cubic-bezier(.4,0,.2,1)}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.exit-left{opacity:0;transform:translateX(-40px)}
+
+/* BOTTOM NAV */
+.bottom-nav{height:60px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;outline:none}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--text)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.35)}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:default;transform:none}
+.stage-indicator{font-size:13px;color:var(--muted)}
+.stage-indicator span{color:var(--text);font-weight:600}
+
+/* ── SLIDE COMPONENTS ── */
+.slide-hero{margin-bottom:28px}
+.slide-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.slide-title{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:8px}
+.slide-desc{font-size:15px;color:var(--muted);line-height:1.6;max-width:680px}
+
+/* CARDS GRID */
+.cards-grid{display:grid;gap:14px}
+.cards-grid.col2{grid-template-columns:1fr 1fr}
+.cards-grid.col3{grid-template-columns:repeat(3,1fr)}
+.cards-grid.col4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.cards-grid.col2,.cards-grid.col3,.cards-grid.col4{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .25s}
+.card:hover{border-color:rgba(59,130,246,.3);transform:translateY(-2px)}
+.card-icon{font-size:28px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* TAG */
+.tag{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;margin-right:4px}
+.tag-blue{background:rgba(37,99,235,.15);color:#60A5FA}
+.tag-purple{background:rgba(124,58,237,.15);color:#A78BFA}
+.tag-green{background:rgba(22,163,74,.15);color:#4ADE80}
+.tag-orange{background:rgba(234,88,12,.15);color:#FB923C}
+.tag-pink{background:rgba(219,39,119,.15);color:#F472B6}
+.tag-teal{background:rgba(13,148,136,.15);color:#34D399}
+
+/* MOCKUP WINDOW */
+.win{background:#0D1117;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.win-bar{background:rgba(255,255,255,.04);padding:9px 14px;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(255,255,255,.06)}
+.win-dot{width:9px;height:9px;border-radius:50%}
+.win-title{font-size:11px;color:var(--muted);margin-left:6px}
+.win-body{padding:18px;font-family:'SF Mono','Fira Code','Cascadia Code',monospace;font-size:12.5px;line-height:1.7}
+.wl{display:flex;gap:10px;margin-bottom:2px}
+.wl-n{color:var(--muted);flex-shrink:0;min-width:28px;text-align:right;font-size:11px;padding-top:1px}
+.c-blue{color:#60A5FA}
+.c-purple{color:#A78BFA}
+.c-green{color:#34D399}
+.c-orange{color:#FB923C}
+.c-text{color:var(--text)}
+.c-muted{color:var(--muted)}
+.c-accent{color:var(--accent)}
+.c-yellow{color:#FBBF24}
+
+/* CHAT BUBBLES */
+.chat{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.bubble{display:flex;gap:10px;align-items:flex-start}
+.bubble.user{flex-direction:row-reverse}
+.bub-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.bub-text{padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;max-width:420px}
+.bubble.ai .bub-text{background:var(--card);border:1px solid var(--border)}
+.bubble.user .bub-text{background:rgba(37,99,235,.2);border:1px solid rgba(37,99,246,.3);text-align:right}
+.bub-tools{padding:8px 14px;border-radius:8px;background:rgba(13,148,136,.08);border:1px solid rgba(13,148,136,.2);font-size:12px;color:#34D399;font-family:monospace}
+
+/* STEPS LIST */
+.steps{display:flex;flex-direction:column;gap:10px}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;transition:all .2s}
+.step-row:hover{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.2);transform:translateX(3px)}
+.step-num{width:26px;height:26px;border-radius:50%;background:rgba(37,99,235,.2);color:#60A5FA;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-info{flex:1}
+.step-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.step-note{font-size:12px;color:var(--muted)}
+
+/* TIMELINE */
+.tl{position:relative;padding-left:28px}
+.tl::before{content:'';position:absolute;left:8px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--blue),rgba(37,99,235,.1))}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-dot2{position:absolute;left:-24px;top:3px;width:14px;height:14px;border-radius:50%;border:2px solid var(--blue);background:var(--bg)}
+.tl-dot2::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:var(--blue)}
+.tl-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.tl-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* FILE TREE */
+.ftree{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-family:monospace;font-size:12.5px;line-height:1.8}
+.ft-dir{color:#FBBF24}
+.ft-file{color:var(--accent)}
+.ft-comment{color:var(--muted);font-size:11px}
+
+/* AGENT LOOP SVG AREA */
+.loop-area{display:flex;flex-direction:column;align-items:center;margin:8px 0 16px}
+.loop-svg-wrap{position:relative;width:340px;height:340px}
+.loop-svg-wrap svg{position:absolute;inset:0;width:100%;height:100%}
+.loop-info-box{text-align:center;margin-top:12px;max-width:400px}
+.loop-info-title{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px}
+.loop-info-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* DELIVERABLE GRID */
+.del-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.del-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center;transition:all .25s;cursor:pointer}
+.del-item:hover{border-color:rgba(59,130,246,.35);transform:translateY(-3px);background:rgba(37,99,235,.08)}
+.del-icon{font-size:26px;margin-bottom:6px}
+.del-name{font-size:12px;font-weight:600;color:var(--text)}
+.del-type{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* SKILL PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.pill{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);transition:all .2s;cursor:pointer}
+.pill:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+
+/* NOTE BOX */
+.note{font-size:13px;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--blue);padding:12px 15px;border-radius:0 8px 8px 0;margin-bottom:16px;line-height:1.6}
+.note strong{color:var(--text)}
+
+/* DIVIDER */
+.hdiv{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:20px 0}
+
+/* BLINK */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.blink{animation:blink 1.2s ease-in-out infinite}
+
+/* LOOP NODE ANIMATION */
+@keyframes pulse-ring{0%{transform:scale(.9);opacity:.7}100%{transform:scale(1.3);opacity:0}}
+.pulse-ring{animation:pulse-ring .9s cubic-bezier(.4,0,.6,1) infinite}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+
+/* LOOP auto highlight */
+.loop-node-g circle.fill{transition:opacity .3s}
+.loop-node-g.active circle.ring{animation:pulse-ring .9s cubic-bezier(.4,0,.6,1) infinite}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">WorkBuddy</div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-title">全流程演示</div>
+  <div class="topbar-progress" id="topProgress"></div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-head">学习路径</div>
+    <div id="sidebarNav"></div>
+    <div class="sidebar-foot">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progFill" style="width:14%"></div>
+      </div>
+      <div class="progress-label" id="progLabel">1 / 7 已完成</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="slides" id="slidesContainer"></div>
+    <div class="bottom-nav">
+      <button class="btn btn-ghost" id="btnPrev" onclick="navigate(-1)">← 上一步</button>
+      <div class="stage-indicator">第 <span id="curNum">1</span> 阶段 / 共 7 阶段</div>
+      <button class="btn btn-primary" id="btnNext" onclick="navigate(1)">下一步 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const STAGES = [
+  {
+    id:'s1', icon:'💾', color:'#2563EB', bg:'rgba(37,99,235,.12)',
+    label:'下载安装', num:'01',
+    badge:'入门', badgeColor:'rgba(37,99,235,.2)', badgeText:'#60A5FA',
+    title:'下载 &amp; 安装 WorkBuddy',
+    desc:'WorkBuddy 是一个「本地 AI 操作系统」——不只是聊天框，而是能读写文件、执行命令、调用 API 的完整 Agent 运行环境。'
+  },
+  {
+    id:'s2', icon:'⚙️', color:'#7C3AED', bg:'rgba(124,58,237,.12)',
+    label:'身份配置', num:'02',
+    badge:'配置', badgeColor:'rgba(124,58,237,.2)', badgeText:'#A78BFA',
+    title:'身份配置 &amp; 工作记忆',
+    desc:'首次运行时，AI 会引导你建立三个核心配置文件，形成跨会话持久记忆，让每次对话都在上下文中进行。'
+  },
+  {
+    id:'s3', icon:'🔌', color:'#0D9488', bg:'rgba(13,148,136,.12)',
+    label:'连接生态', num:'03',
+    badge:'扩展', badgeColor:'rgba(13,148,136,.2)', badgeText:'#34D399',
+    title:'连接工具生态',
+    desc:'通过 MCP、Connectors、Skills 三层架构，让 AI 接入数据库、第三方平台、专业工作流，构建专属「超能力工具箱」。'
+  },
+  {
+    id:'s4', icon:'💬', color:'#EA580C', bg:'rgba(234,88,12,.12)',
+    label:'提出需求', num:'04',
+    badge:'交互', badgeColor:'rgba(234,88,12,.2)', badgeText:'#FB923C',
+    title:'用自然语言提出需求',
+    desc:'你只需要用中文描述目标，AI 会自动理解意图、拆解子任务、制定执行计划，并在行动前等待你确认。'
+  },
+  {
+    id:'s5', icon:'🤖', color:'#16A34A', bg:'rgba(22,163,74,.12)',
+    label:'Agent 执行', num:'05',
+    badge:'核心', badgeColor:'rgba(22,163,74,.2)', badgeText:'#4ADE80',
+    title:'Agent Loop 自主执行',
+    desc:'AI 进入「感知→思考→行动→观察」的自主循环，每轮可调用数十个工具，多步骤自动完成复杂任务，遇到错误自行调试。'
+  },
+  {
+    id:'s6', icon:'🔁', color:'#DB2777', bg:'rgba(219,39,119,.12)',
+    label:'迭代优化', num:'06',
+    badge:'精修', badgeColor:'rgba(219,39,119,.2)', badgeText:'#F472B6',
+    title:'对话式迭代优化',
+    desc:'基于预览反馈，用口语化指令快速修改——「把标题改大」「这个数据不对」——AI 精准定位并只更新必要部分。'
+  },
+  {
+    id:'s7', icon:'📦', color:'#D97706', bg:'rgba(217,119,6,.12)',
+    label:'交付产品', num:'07',
+    badge:'输出', badgeColor:'rgba(217,119,6,.2)', badgeText:'#FBBF24',
+    title:'交付可用产品',
+    desc:'AI 自动打包交付物，支持 HTML / PPTX / Word / Excel / 代码应用等 8+ 格式，并通过小程序、CDN、企业微信等渠道一键分发。'
+  }
+];
+
+// ===================== SLIDE CONTENT =====================
+function buildSlide(idx) {
+  switch(idx) {
+    case 0: return slideInstall();
+    case 1: return slideConfig();
+    case 2: return slideConnect();
+    case 3: return slidePrompt();
+    case 4: return slideAgent();
+    case 5: return slideIterate();
+    case 6: return slideDeliver();
+    default: return '<p>内容建设中…</p>';
+  }
+}
+
+function slideInstall() {
+  return `
+  <div class="slide-hero">
+    <div class="slide-badge" style="background:rgba(37,99,235,.2);color:#60A5FA">💾 Stage 01 · 下载安装</div>
+    <div class="slide-title">获取 WorkBuddy，<br>三端覆盖</div>
+    <div class="slide-desc">WorkBuddy 提供桌面端、Web 端、微信小程序三种接入方式，适配不同使用场景。</div>
+  </div>
+
+  <div class="cards-grid col3" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-icon">🖥️</div>
+      <div class="card-title">桌面客户端</div>
+      <div class="card-desc" style="margin-bottom:10px">Windows · macOS · Linux<br>完整文件系统访问，本地命令执行</div>
+      <span class="tag tag-blue">推荐</span><span class="tag tag-green">全功能</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">Web 版</div>
+      <div class="card-desc" style="margin-bottom:10px">codebuddy.cn<br>浏览器即用，适合轻量对话任务</div>
+      <span class="tag tag-purple">零安装</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <div class="card-title">微信小程序</div>
+      <div class="card-desc" style="margin-bottom:10px">随时接收 AI 产出<br>文件推送到手机，跨设备协同</div>
+      <span class="tag tag-teal">移动端</span>
+    </div>
+  </div>
+
+  <div class="win">
+    <div class="win-bar">
+      <div class="win-dot" style="background:#FF5F57"></div>
+      <div class="win-dot" style="background:#FEBC2E"></div>
+      <div class="win-dot" style="background:#28C840"></div>
+      <span class="win-title">WorkBuddy Desktop · 启动检测</span>
+    </div>
+    <div class="win-body">
+      <div class="wl"><span class="wl-n">1</span><span class="c-muted"># WorkBuddy Desktop 启动中…</span></div>
+      <div class="wl"><span class="wl-n">2</span><span class="c-green">✓</span><span class="c-text" style="margin-left:6px">本地 AI 运行时就绪</span></div>
+      <div class="wl"><span class="wl-n">3</span><span class="c-green">✓</span><span class="c-text" style="margin-left:6px">文件系统访问已授权</span></div>
+      <div class="wl"><span class="wl-n">4</span><span class="c-green">✓</span><span class="c-text" style="margin-left:6px">Python 3.14 · Node 24 · Shell 工具链检测通过</span></div>
+      <div class="wl"><span class="wl-n">5</span><span class="c-green">✓</span><span class="c-text" style="margin-left:6px">MCP 服务注册完成</span></div>
+      <div class="wl"><span class="wl-n">6</span><span class="c-accent">→</span><span class="c-text" style="margin-left:6px">欢迎！输入你的第一个需求开始…</span><span class="blink" style="color:var(--accent)">|</span></div>
+    </div>
+  </div>
+
+  <div class="note">💡 <strong>关键认知：</strong>WorkBuddy 不是普通聊天机器人。它是一个能「看到你的文件、运行你的代码、发请求给 API」的本地 AI Agent 平台。</div>
+  `;
+}
+
+function slideConfig() {
+  return `
+  <div class="slide-hero">
+    <div class="slide-badge" style="background:rgba(124,58,237,.2);color:#A78BFA">⚙️ Stage 02 · 身份配置</div>
+    <div class="slide-title">建立 AI 的<br>持久化记忆体系</div>
+    <div class="slide-desc">首次打开时，AI 会主动引导你完成身份初始化，之后每次会话都能「记住你」。</div>
+  </div>
+
+  <div class="cards-grid col2" style="margin-bottom:20px">
+    <div>
+      <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">📁 三档核心配置文件</div>
+      <div class="tl">
+        <div class="tl-item">
+          <div class="tl-dot2"></div>
+          <div class="tl-name">SOUL.md</div>
+          <div class="tl-desc">AI 的性格基调、行事原则、边界设定<br>（简洁直接？风趣幽默？专业严谨？）</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot2"></div>
+          <div class="tl-name">IDENTITY.md</div>
+          <div class="tl-desc">AI 的名字、形象定位、表达风格<br>（你叫 Aria？还是 Max？）</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot2"></div>
+          <div class="tl-name">USER.md</div>
+          <div class="tl-desc">你的名字、城市、领域偏好、常用工具<br>（AI 了解你越多，帮助越精准）</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot2"></div>
+          <div class="tl-name">memory / YYYY-MM-DD.md</div>
+          <div class="tl-desc">每日工作日志，跨会话自动读取<br>（每次完成任务后自动追加）</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">💬 首次对话示例</div>
+      <div class="chat">
+        <div class="bubble ai">
+          <div class="bub-avatar" style="background:rgba(124,58,237,.2)">🤖</div>
+          <div class="bub-text">在开始之前，我想确认几个常驻信息——这样之后每次对话都不用重复介绍背景。你希望我怎么称呼你？</div>
+        </div>
+        <div class="bubble user">
+          <div class="bub-avatar" style="background:rgba(37,99,235,.2)">😊</div>
+          <div class="bub-text">叫我小明，深圳，做 A 股研究的，偏好简洁中文</div>
+        </div>
+        <div class="bubble ai">
+          <div class="bub-avatar" style="background:rgba(124,58,237,.2)">🤖</div>
+          <div class="bub-text">好的小明！我已记录你的偏好，以后直接用中文、简洁风格汇报。</div>
+        </div>
+        <div class="bub-tools">
+          ✓ 写入 USER.md — 名字/城市/领域<br>
+          ✓ 写入 SOUL.md — 中文·简洁风格<br>
+          ✓ 写入 IDENTITY.md — AI 角色设定
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ftree">
+    <div><span class="ft-dir">~/.workbuddy/</span></div>
+    <div>&nbsp;&nbsp;<span class="ft-file">SOUL.md</span> &nbsp;&nbsp;<span class="ft-comment">← AI 的性格与原则</span></div>
+    <div>&nbsp;&nbsp;<span class="ft-file">IDENTITY.md</span> &nbsp;<span class="ft-comment">← AI 的名字与定位</span></div>
+    <div>&nbsp;&nbsp;<span class="ft-file">USER.md</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-comment">← 你的偏好与背景</span></div>
+    <div>&nbsp;&nbsp;<span class="ft-dir">memory/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">2026-05-21.md</span> &nbsp;<span class="ft-comment">← 今日工作日志（自动生成）</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">MEMORY.md</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-comment">← 长期记忆（跨会话）</span></div>
+  </div>
+  `;
+}
+
+function slideConnect() {
+  return `
+  <div class="slide-hero">
+    <div class="slide-badge" style="background:rgba(13,148,136,.2);color:#34D399">🔌 Stage 03 · 连接生态</div>
+    <div class="slide-title">构建 AI 的<br>「超能力工具箱」</div>
+    <div class="slide-desc">通过三层能力扩展架构，让 AI 从「会聊天」升级为「能干活」。</div>
+  </div>
+
+  <div class="cards-grid col2" style="margin-bottom:16px">
+    <div class="card" style="border-color:rgba(37,99,235,.25)">
+      <div class="card-icon">🔧</div>
+      <div class="card-title" style="color:#60A5FA">MCP 服务器</div>
+      <div class="card-desc" style="margin-bottom:10px">Model Context Protocol 标准协议<br>接入数据库、浏览器自动化、Git、Notion…</div>
+      <div class="pills">
+        <div class="pill" style="border-color:rgba(37,99,235,.25);color:#60A5FA">🌐 Playwright</div>
+        <div class="pill" style="border-color:rgba(37,99,235,.25);color:#60A5FA">📂 GitHub</div>
+        <div class="pill" style="border-color:rgba(37,99,235,.25);color:#60A5FA">🗄️ SQLite</div>
+      </div>
+    </div>
+    <div class="card" style="border-color:rgba(124,58,237,.25)">
+      <div class="card-icon">🔗</div>
+      <div class="card-title" style="color:#A78BFA">Connectors 连接器</div>
+      <div class="card-desc" style="margin-bottom:10px">一键接入企业级平台<br>双向数据流，读写一体</div>
+      <div class="pills">
+        <div class="pill" style="border-color:rgba(124,58,237,.25);color:#A78BFA">💼 企业微信</div>
+        <div class="pill" style="border-color:rgba(124,58,237,.25);color:#A78BFA">📄 腾讯文档</div>
+        <div class="pill" style="border-color:rgba(124,58,237,.25);color:#A78BFA">📋 TAPD</div>
+      </div>
+    </div>
+    <div class="card" style="border-color:rgba(13,148,136,.25)">
+      <div class="card-icon">🎯</div>
+      <div class="card-title" style="color:#34D399">Skills 技能包</div>
+      <div class="card-desc" style="margin-bottom:10px">预置专业工作流<br>金融数据·PDF·PPTX·代码审查…</div>
+      <div class="pills">
+        <div class="pill" style="border-color:rgba(13,148,136,.25);color:#34D399">📊 金融数据</div>
+        <div class="pill" style="border-color:rgba(13,148,136,.25);color:#34D399">📑 PDF 处理</div>
+        <div class="pill" style="border-color:rgba(13,148,136,.25);color:#34D399">🎨 PPTX 生成</div>
+      </div>
+    </div>
+    <div class="card" style="border-color:rgba(234,88,12,.25)">
+      <div class="card-icon">🤖</div>
+      <div class="card-title" style="color:#FB923C">Experts 专家中心</div>
+      <div class="card-desc" style="margin-bottom:10px">100+ 垂直领域 AI 专家<br>法律·医疗·金融·运营·技术…</div>
+      <div class="pills">
+        <div class="pill" style="border-color:rgba(234,88,12,.25);color:#FB923C">⚖️ 法律顾问</div>
+        <div class="pill" style="border-color:rgba(234,88,12,.25);color:#FB923C">📈 股票分析</div>
+        <div class="pill" style="border-color:rgba(234,88,12,.25);color:#FB923C">🏥 医疗咨询</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win">
+    <div class="win-bar">
+      <div class="win-dot" style="background:#FF5F57"></div>
+      <div class="win-dot" style="background:#FEBC2E"></div>
+      <div class="win-dot" style="background:#28C840"></div>
+      <span class="win-title">mcp.json · 配置示例</span>
+    </div>
+    <div class="win-body">
+      <div class="wl"><span class="wl-n">1</span><span class="c-text">{</span></div>
+      <div class="wl"><span class="wl-n">2</span><span class="c-text">&nbsp;&nbsp;<span class="c-purple">"mcpServers"</span>: {</span></div>
+      <div class="wl"><span class="wl-n">3</span><span class="c-text">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-blue">"playwright"</span>: { <span class="c-orange">"command"</span>: <span class="c-green">"npx"</span>, <span class="c-orange">"args"</span>: [<span class="c-green">"@playwright/mcp@latest"</span>] }</span></div>
+      <div class="wl"><span class="wl-n">4</span><span class="c-text">&nbsp;&nbsp;}</span></div>
+      <div class="wl"><span class="wl-n">5</span><span class="c-text">}</span></div>
+    </div>
+  </div>
+  `;
+}
+
+function slidePrompt() {
+  return `
+  <div class="slide-hero">
+    <div class="slide-badge" style="background:rgba(234,88,12,.2);color:#FB923C">💬 Stage 04 · 提出需求</div>
+    <div class="slide-title">一句话需求，<br>AI 自动拆解计划</div>
+    <div class="slide-desc">你用自然语言描述目标，AI 会进入 Plan 模式，输出结构化执行计划，等待你确认后再行动。</div>
+  </div>
+
+  <div class="cards-grid col3" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-icon">🗣️</div>
+      <div class="card-title">自然语言需求</div>
+      <div class="card-desc">「帮我做一个半导体行业的 HTML 研报仪表盘，含 8 只核心股估值对比图」</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📎</div>
+      <div class="card-title">文件 + 指令</div>
+      <div class="card-desc">上传 PDF / Excel / 截图，结合文字说明目标，支持多模态理解</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <div class="card-title">Slash 命令</div>
+      <div class="card-desc">/commit /plan /review-pr<br>触发预设工作流，精准高效</div>
+    </div>
+  </div>
+
+  <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">📋 Plan 模式 · AI 自动拆解任务</div>
+  <div class="chat" style="margin-bottom:12px">
+    <div class="bubble user">
+      <div class="bub-avatar" style="background:rgba(37,99,235,.2)">😊</div>
+      <div class="bub-text">帮我做一个 A 股半导体板块研报可视化仪表盘，含 8 只核心股票的 PE 估值对比图</div>
+    </div>
+    <div class="bubble ai">
+      <div class="bub-avatar" style="background:rgba(22,163,74,.2)">🤖</div>
+      <div class="bub-text">好，进入计划模式，理解需求后拆解如下：</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step-row">
+      <div class="step-num">1</div>
+      <div class="step-info">
+        <div class="step-name">数据收集</div>
+        <div class="step-note">WebSearch 查询 8 只股票最新 PE / PEG / 净利润增速数据</div>
+      </div>
+      <span class="tag tag-blue">数据层</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">2</div>
+      <div class="step-info">
+        <div class="step-name">数据清洗</div>
+        <div class="step-note">Python 脚本标准化格式，剔除异常值</div>
+      </div>
+      <span class="tag tag-purple">处理层</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">3</div>
+      <div class="step-info">
+        <div class="step-name">Chart.js 图表配置</div>
+        <div class="step-note">生成 PE 柱状图、净利润增速对比图配置文件</div>
+      </div>
+      <span class="tag tag-teal">可视化层</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">4</div>
+      <div class="step-info">
+        <div class="step-name">HTML 单页输出</div>
+        <div class="step-note">深色主题、响应式布局、可直接转发的仪表盘</div>
+      </div>
+      <span class="tag tag-orange">输出层</span>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:14px">💡 <strong>Plan 模式：</strong>确认计划后 AI 才开始执行，避免在错误方向上浪费时间。随时可以在这一步修改计划细节。</div>
+  `;
+}
+
+function slideAgent() {
+  return `
+  <div class="slide-hero">
+    <div class="slide-badge" style="background:rgba(22,163,74,.2);color:#4ADE80">🤖 Stage 05 · Agent 执行</div>
+    <div class="slide-title">Agent Loop：<br>AI 的「自主大脑」</div>
+    <div class="slide-desc">AI 进入感知→思考→行动→观察的循环，每轮可自动调用 10~50 个工具，遇到错误自行调试修复。</div>
+  </div>
+
+  <div class="loop-area">
+    <div class="loop-svg-wrap" id="loopSvgWrap">
+      <svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg" id="loopSvg">
+        <!-- orbit -->
+        <circle cx="170" cy="170" r="120" fill="none" stroke="rgba(59,130,246,0.15)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <!-- center -->
+        <defs>
+          <radialGradient id="brainGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#3B82F6"/>
+            <stop offset="100%" stop-color="#7C3AED"/>
+          </radialGradient>
+        </defs>
+        <circle cx="170" cy="170" r="38" fill="url(#brainGrad)" opacity="0.9"/>
+        <circle cx="170" cy="170" r="38" fill="none" stroke="rgba(59,130,246,0.4)" stroke-width="1.5"/>
+        <text x="170" y="178" text-anchor="middle" font-size="26">🧠</text>
+        <!-- nodes: 6 evenly spaced, starting from top, clockwise -->
+        <!-- node 1: top (270deg) -->
+        <g class="loop-node-g" id="ln0" style="cursor:pointer" onclick="loopClick(0)">
+          <circle cx="170" cy="50" r="28" class="ring" fill="none" stroke="#60A5FA" stroke-width="1.5" opacity="0"/>
+          <circle cx="170" cy="50" r="24" class="fill" fill="rgba(37,99,235,0.2)" stroke="rgba(37,99,235,0.4)" stroke-width="1.5"/>
+          <text x="170" y="57" text-anchor="middle" font-size="18">🔍</text>
+        </g>
+        <!-- node 2: top-right (330deg) -->
+        <g class="loop-node-g" id="ln1" style="cursor:pointer" onclick="loopClick(1)">
+          <circle cx="274" cy="110" r="28" class="ring" fill="none" stroke="#A78BFA" stroke-width="1.5" opacity="0"/>
+          <circle cx="274" cy="110" r="24" class="fill" fill="rgba(124,58,237,0.2)" stroke="rgba(124,58,237,0.4)" stroke-width="1.5"/>
+          <text x="274" y="117" text-anchor="middle" font-size="18">💭</text>
+        </g>
+        <!-- node 3: bottom-right (30deg) -->
+        <g class="loop-node-g" id="ln2" style="cursor:pointer" onclick="loopClick(2)">
+          <circle cx="274" cy="230" r="28" class="ring" fill="none" stroke="#34D399" stroke-width="1.5" opacity="0"/>
+          <circle cx="274" cy="230" r="24" class="fill" fill="rgba(13,148,136,0.2)" stroke="rgba(13,148,136,0.4)" stroke-width="1.5"/>
+          <text x="274" y="237" text-anchor="middle" font-size="18">🎯</text>
+        </g>
+        <!-- node 4: bottom (90deg) -->
+        <g class="loop-node-g" id="ln3" style="cursor:pointer" onclick="loopClick(3)">
+          <circle cx="170" cy="290" r="28" class="ring" fill="none" stroke="#FB923C" stroke-width="1.5" opacity="0"/>
+          <circle cx="170" cy="290" r="24" class="fill" fill="rgba(234,88,12,0.2)" stroke="rgba(234,88,12,0.4)" stroke-width="1.5"/>
+          <text x="170" y="297" text-anchor="middle" font-size="18">⚡</text>
+        </g>
+        <!-- node 5: bottom-left (150deg) -->
+        <g class="loop-node-g" id="ln4" style="cursor:pointer" onclick="loopClick(4)">
+          <circle cx="66" cy="230" r="28" class="ring" fill="none" stroke="#4ADE80" stroke-width="1.5" opacity="0"/>
+          <circle cx="66" cy="230" r="24" class="fill" fill="rgba(22,163,74,0.2)" stroke="rgba(22,163,74,0.4)" stroke-width="1.5"/>
+          <text x="66" y="237" text-anchor="middle" font-size="18">👁️</text>
+        </g>
+        <!-- node 6: top-left (210deg) -->
+        <g class="loop-node-g" id="ln5" style="cursor:pointer" onclick="loopClick(5)">
+          <circle cx="66" cy="110" r="28" class="ring" fill="none" stroke="#E879F9" stroke-width="1.5" opacity="0"/>
+          <circle cx="66" cy="110" r="24" class="fill" fill="rgba(217,70,239,0.2)" stroke="rgba(217,70,239,0.4)" stroke-width="1.5"/>
+          <text x="66" y="117" text-anchor="middle" font-size="18">🔄</text>
+        </g>
+        <!-- labels -->
+        <text x="170" y="14" text-anchor="middle" fill="#60A5FA" font-size="10" font-weight="600">分析上下文</text>
+        <text x="310" y="108" text-anchor="start" fill="#A78BFA" font-size="10" font-weight="600">规划行动</text>
+        <text x="306" y="232" text-anchor="start" fill="#34D399" font-size="10" font-weight="600">选择工具</text>
+        <text x="170" y="332" text-anchor="middle" fill="#FB923C" font-size="10" font-weight="600">执行操作</text>
+        <text x="22" y="232" text-anchor="end" fill="#4ADE80" font-size="10" font-weight="600">观察结果</text>
+        <text x="24" y="108" text-anchor="end" fill="#E879F9" font-size="10" font-weight="600">迭代决策</text>
+        <!-- traveling dot -->
+        <circle id="travelDot" r="5" fill="#38BDF8" opacity="0">
+          <animate id="dotAnim" attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+    <div class="loop-info-box">
+      <div class="loop-info-title" id="loopInfoTitle">点击节点查看详情</div>
+      <div class="loop-info-desc" id="loopInfoDesc">AI 每次「执行」可能包含 10~50 个工具调用，整个过程完全自动化，遇到错误会自行调试</div>
+    </div>
+  </div>
+
+  <div class="hdiv"></div>
+  <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">📌 真实执行日志 · 半导体研报任务（10步）</div>
+  <div class="win">
+    <div class="win-bar">
+      <div class="win-dot" style="background:#FF5F57"></div>
+      <div class="win-dot" style="background:#FEBC2E"></div>
+      <div class="win-dot" style="background:#28C840"></div>
+      <span class="win-title">Agent 执行日志</span>
+    </div>
+    <div class="win-body">
+      <div class="wl"><span class="wl-n">1</span><span class="c-accent">Read</span><span class="c-muted" style="margin-left:6px">→ 读取 MEMORY.md 项目背景</span></div>
+      <div class="wl"><span class="wl-n">2</span><span class="c-accent">WebSearch</span><span class="c-muted" style="margin-left:6px">→ 查询 8 只股票最新 PE / 净利润增速</span></div>
+      <div class="wl"><span class="wl-n">3</span><span class="c-purple">Think</span><span class="c-muted" style="margin-left:6px">→ 数据来源有误，切换备用数据源重新查询</span></div>
+      <div class="wl"><span class="wl-n">4</span><span class="c-accent">Bash</span><span class="c-muted" style="margin-left:6px">→ python clean_data.py 数据清洗</span></div>
+      <div class="wl"><span class="wl-n">5</span><span class="c-accent">Write</span><span class="c-muted" style="margin-left:6px">→ 生成 chart-config.js 图表配置</span></div>
+      <div class="wl"><span class="wl-n">6</span><span class="c-accent">Write</span><span class="c-muted" style="margin-left:6px">→ 生成 index.html 主文件</span></div>
+      <div class="wl"><span class="wl-n">7</span><span class="c-accent">Bash</span><span class="c-muted" style="margin-left:6px">→ node server.js 启动本地预览</span></div>
+      <div class="wl"><span class="wl-n">8</span><span class="c-purple">Observe</span><span class="c-muted" style="margin-left:6px">→ 检测到图表 canvas 显示空白，定位 CSS 原因</span></div>
+      <div class="wl"><span class="wl-n">9</span><span class="c-accent">Edit</span><span class="c-muted" style="margin-left:6px">→ 修复 canvas width/height 属性</span></div>
+      <div class="wl"><span class="wl-n">10</span><span class="c-green">✓ 完成</span><span class="c-muted" style="margin-left:6px">→ 预览通过，准备交付</span></div>
+    </div>
+  </div>
+  `;
+}
+
+function slideIterate() {
+  return `
+  <div class="slide-hero">
+    <div class="slide-badge" style="background:rgba(219,39,119,.2);color:#F472B6">🔁 Stage 06 · 迭代优化</div>
+    <div class="slide-title">对话式修改，<br>精准到位</div>
+    <div class="slide-desc">不需要重新生成，口语化指令直接修改——AI 精准定位变更位置，只更新必要部分。</div>
+  </div>
+
+  <div class="cards-grid col2" style="margin-bottom:16px">
+    <div>
+      <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">🔄 四种迭代模式</div>
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num" style="background:rgba(219,39,119,.2);color:#F472B6">①</div>
+          <div class="step-info">
+            <div class="step-name">预览确认</div>
+            <div class="step-note">preview_url 实时渲染，所见即所得检查结果</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num" style="background:rgba(219,39,119,.2);color:#F472B6">②</div>
+          <div class="step-info">
+            <div class="step-name">口语化修改</div>
+            <div class="step-note">「把标题字体改大」「颜色换成深蓝」「加一行说明文字」</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num" style="background:rgba(219,39,119,.2);color:#F472B6">③</div>
+          <div class="step-info">
+            <div class="step-name">数据核查修正</div>
+            <div class="step-note">指出具体数据错误，AI 批量核查同类数值并更新</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num" style="background:rgba(219,39,119,.2);color:#F472B6">④</div>
+          <div class="step-info">
+            <div class="step-name">「重新生成」</div>
+            <div class="step-note">完全重启方向，AI 保留上下文记忆，不从零开始</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">💬 真实迭代对话</div>
+      <div class="chat">
+        <div class="bubble user">
+          <div class="bub-avatar" style="background:rgba(37,99,235,.2)">😊</div>
+          <div class="bub-text">鼎龙股份的 PE 值不对，应该是 67.3x，不是 16.3x</div>
+        </div>
+        <div class="bubble ai">
+          <div class="bub-avatar" style="background:rgba(219,39,119,.2)">🤖</div>
+          <div class="bub-text">收到，同步核查其他股票 PE 数值可信度…</div>
+        </div>
+        <div class="bub-tools">
+          Edit → 鼎龙股份: 16.3x → <strong style="color:#4ADE80">67.3x</strong> ✓<br>
+          Edit → 石英股份: 26.4x → <strong style="color:#4ADE80">94.8x</strong> ✓<br>
+          Edit → 中船特气: 18.6x → <strong style="color:#4ADE80">120.9x</strong> ✓
+        </div>
+        <div class="bubble ai">
+          <div class="bub-avatar" style="background:rgba(219,39,119,.2)">🤖</div>
+          <div class="bub-text">3 处数值已更正，图表已同步更新，预览已刷新 ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cards-grid col3">
+    <div class="card" style="text-align:center">
+      <div style="font-size:32px;margin-bottom:8px">⚡</div>
+      <div class="card-title">秒级响应</div>
+      <div class="card-desc">简单修改通常在 5~15 秒内完成</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:32px;margin-bottom:8px">🎯</div>
+      <div class="card-title">精准定位</div>
+      <div class="card-desc">只改你说的那部分，不破坏其他内容</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:32px;margin-bottom:8px">🧠</div>
+      <div class="card-title">记忆上下文</div>
+      <div class="card-desc">AI 记住所有修改历史，避免反复解释</div>
+    </div>
+  </div>
+  `;
+}
+
+function slideDeliver() {
+  return `
+  <div class="slide-hero">
+    <div class="slide-badge" style="background:rgba(217,119,6,.2);color:#FBBF24">📦 Stage 07 · 交付产品</div>
+    <div class="slide-title">多格式输出，<br>一键分发</div>
+    <div class="slide-desc">产品完成后，AI 自动打包交付物，支持 8 种以上格式，通过小程序、CDN、企业协作平台分发。</div>
+  </div>
+
+  <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">📤 可交付产品类型</div>
+  <div class="del-grid" style="margin-bottom:20px">
+    <div class="del-item"><div class="del-icon">🌐</div><div class="del-name">HTML 报告</div><div class="del-type">可视化仪表盘</div></div>
+    <div class="del-item"><div class="del-icon">📊</div><div class="del-name">PPTX 演示</div><div class="del-type">商务汇报</div></div>
+    <div class="del-item"><div class="del-icon">📄</div><div class="del-name">Word 文档</div><div class="del-type">研究报告</div></div>
+    <div class="del-item"><div class="del-icon">📈</div><div class="del-name">Excel 数据</div><div class="del-type">分析表格</div></div>
+    <div class="del-item"><div class="del-icon">🖼️</div><div class="del-name">AI 图片</div><div class="del-type">生成式内容</div></div>
+    <div class="del-item"><div class="del-icon">🎬</div><div class="del-name">AI 视频</div><div class="del-type">多模态产出</div></div>
+    <div class="del-item"><div class="del-icon">⚙️</div><div class="del-name">代码应用</div><div class="del-type">可运行程序</div></div>
+    <div class="del-item"><div class="del-icon">🤖</div><div class="del-name">定时自动化</div><div class="del-type">Cron 任务</div></div>
+  </div>
+
+  <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">🚀 三种分发渠道</div>
+  <div class="steps" style="margin-bottom:16px">
+    <div class="step-row">
+      <div class="step-num" style="background:rgba(217,119,6,.2);color:#FBBF24">📱</div>
+      <div class="step-info">
+        <div class="step-name">deliver_attachments → 微信小程序</div>
+        <div class="step-note">AI 自动推送文件到你的手机，跨设备无缝接收，转发即用</div>
+      </div>
+      <span class="tag tag-orange">最快</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:rgba(37,99,235,.2);color:#60A5FA">☁️</div>
+      <div class="step-info">
+        <div class="step-name">GitHub Pages / COS + CDN</div>
+        <div class="step-note">HTML 报告一键部署，生成可分享公开链接，永久在线</div>
+      </div>
+      <span class="tag tag-blue">持久化</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:rgba(13,148,136,.2);color:#34D399">🔗</div>
+      <div class="step-info">
+        <div class="step-name">企业微信 / 腾讯文档 Connector</div>
+        <div class="step-note">通过 Connector 直接发送到企业协作平台，团队同步接收</div>
+      </div>
+      <span class="tag tag-teal">协同</span>
+    </div>
+  </div>
+
+  <div class="note" style="background:rgba(22,163,74,.06);border-left-color:#4ADE80">
+    🎉 <strong>完整闭环：</strong>从「下载 WorkBuddy」到「交付可用产品」，整个流程最快可在 <strong style="color:#4ADE80">30 分钟内</strong>完成——这就是 AI 应用的生产力飞跃。
+  </div>
+  `;
+}
+
+// ===================== RENDER =====================
+let currentIdx = 0;
+let visited = new Set([0]);
+
+function renderNav() {
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = STAGES.map((s, i) => `
+    <div class="stage-nav-item ${i===currentIdx?'active':''} ${visited.has(i)&&i!==currentIdx?'done':''}"
+         onclick="goTo(${i})">
+      <div class="sni-icon" style="background:${s.bg}">${s.icon}</div>
+      <div class="sni-meta">
+        <div class="sni-num">Stage ${s.num}</div>
+        <div class="sni-label">${s.label}</div>
+      </div>
+      <div class="sni-check">✓</div>
+    </div>
+  `).join('');
+}
+
+function renderTopProgress() {
+  const tp = document.getElementById('topProgress');
+  tp.innerHTML = STAGES.map((s, i) => `
+    ${i>0?'<span class="tp-arrow">›</span>':''}
+    <div class="tp-step ${i===currentIdx?'active':''} ${visited.has(i)&&i<currentIdx?'done':''}"
+         onclick="goTo(${i})">
+      <div class="tp-dot">${visited.has(i)&&i<currentIdx?'✓':i+1}</div>
+      ${s.label}
+    </div>
+  `).join('');
+}
+
+function renderSlides() {
+  const container = document.getElementById('slidesContainer');
+  container.innerHTML = STAGES.map((s, i) => `
+    <div class="slide ${i===0?'active':''}" id="slide-${i}">
+      ${buildSlide(i)}
+    </div>
+  `).join('');
+}
+
+function updateProgress() {
+  const pct = Math.round((currentIdx + 1) / STAGES.length * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progLabel').textContent = `${currentIdx+1} / ${STAGES.length} 已查看`;
+  document.getElementById('curNum').textContent = currentIdx + 1;
+}
+
+function goTo(idx, dir) {
+  if (idx < 0 || idx >= STAGES.length) return;
+  const oldSlide = document.getElementById('slide-' + currentIdx);
+  const newSlide = document.getElementById('slide-' + idx);
+
+  const goingForward = dir !== undefined ? dir > 0 : idx > currentIdx;
+
+  oldSlide.classList.remove('active');
+  oldSlide.classList.add('exit-left');
+  setTimeout(() => oldSlide.classList.remove('exit-left'), 400);
+
+  newSlide.style.transform = goingForward ? 'translateX(40px)' : 'translateX(-40px)';
+  newSlide.style.opacity = '0';
+  newSlide.classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      newSlide.style.transform = '';
+      newSlide.style.opacity = '';
+    });
+  });
+
+  currentIdx = idx;
+  visited.add(idx);
+  renderNav();
+  renderTopProgress();
+  updateProgress();
+
+  document.getElementById('btnPrev').disabled = currentIdx === 0;
+  document.getElementById('btnNext').textContent = currentIdx === STAGES.length - 1 ? '完成 🎉' : '下一步 →';
+
+  // scroll to top
+  newSlide.scrollTop = 0;
+
+  // init agent loop if on slide 4
+  if (idx === 4) setTimeout(initLoop, 100);
+}
+
+function navigate(dir) {
+  goTo(currentIdx + dir, dir);
+}
+
+// ===================== AGENT LOOP =====================
+const loopData = [
+  { title:'🔍 分析上下文', desc:'读取用户意图、工作记忆文件、当前文件状态，建立完整上下文理解' },
+  { title:'💭 规划行动', desc:'基于上下文深度思考，规划最优行动路径，选择工具组合策略' },
+  { title:'🎯 选择工具', desc:'从 100+ 可用工具中挑选最适合的：Read / Write / Bash / WebSearch / Edit…' },
+  { title:'⚡ 执行操作', desc:'调用所选工具执行：写文件、运行命令、搜索数据、请求 API 等' },
+  { title:'👁️ 观察结果', desc:'分析工具返回值，验证输出正确性，捕获错误并记录观察' },
+  { title:'🔄 迭代决策', desc:'判断任务是否完成：完成则输出交付，否则携带新信息进入下一轮循环' }
+];
+
+let loopTimer = null;
+let loopCurrent = 0;
+
+function loopClick(idx) {
+  loopCurrent = idx;
+  highlightLoop(idx);
+  clearInterval(loopTimer);
+  setTimeout(() => {
+    loopTimer = setInterval(() => {
+      loopCurrent = (loopCurrent + 1) % 6;
+      highlightLoop(loopCurrent);
+    }, 1800);
+  }, 5000);
+}
+
+function highlightLoop(idx) {
+  for (let i = 0; i < 6; i++) {
+    const g = document.getElementById('ln' + i);
+    if (!g) return;
+    const ring = g.querySelector('.ring');
+    const fill = g.querySelector('.fill');
+    if (i === idx) {
+      ring.setAttribute('opacity', '0.6');
+      ring.style.animation = 'pulse-ring .9s cubic-bezier(.4,0,.6,1) infinite';
+    } else {
+      ring.setAttribute('opacity', '0');
+      ring.style.animation = '';
+    }
+  }
+  const t = document.getElementById('loopInfoTitle');
+  const d = document.getElementById('loopInfoDesc');
+  if (t) t.textContent = loopData[idx].title;
+  if (d) d.textContent = loopData[idx].desc;
+}
+
+function initLoop() {
+  clearInterval(loopTimer);
+  loopCurrent = 0;
+  highlightLoop(0);
+  loopTimer = setInterval(() => {
+    loopCurrent = (loopCurrent + 1) % 6;
+    highlightLoop(loopCurrent);
+  }, 1800);
+}
+
+// ===================== INIT =====================
+renderSlides();
+renderNav();
+renderTopProgress();
+updateProgress();
+document.getElementById('btnPrev').disabled = true;
+
+// expose loopClick globally
+window.loopClick = loopClick;
+window.goTo = goTo;
+window.navigate = navigate;
+window.setActive = function(){};
+</script>
+</body>
+</html>
